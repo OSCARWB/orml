@@ -1,0 +1,7 @@
+hard_tabs = true
+#use_field_init_shorthand = true
+#struct_field_align_threshold = 20
+#reorder_impl_items = true
+#brace_style = "AlwaysNextLine"
+#fn_single_line = true
+#where_single_line = true
