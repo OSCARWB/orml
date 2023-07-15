@@ -8,5 +8,6 @@
 //! - vectors
 //! - and many more to come
 
+pub use ::vector::Vector;
+
 pub mod fraction;
-pub mod vector;
