@@ -33,7 +33,7 @@ where
 
 #[cfg(test)]
 mod tests {
-	use crate::tests::{VBool3, VUsizeN, SIZE};
+	use crate::{tests::{VUsizeN, SIZE}, typedefs::VBool3};
 
 	#[test]
 	fn partial_eq() {

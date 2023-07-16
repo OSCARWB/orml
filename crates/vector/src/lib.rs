@@ -1,4 +1,3 @@
-
 //! Mathimatical Vectors
 //!
 //! This module contains a generic Vector (Vector<T, const DIMS: usize>) that can be any type or size
@@ -6,11 +5,12 @@
 
 #![allow(dead_code)]
 
-use std::ops::{Add, Mul};
+use std::{ops::{Add, Mul}, array};
 
 pub mod arithmetic;
 pub mod index;
 pub mod ordering;
+pub mod typedefs;
 
 /// A Mathimatical Vector
 /// Takes in a type T as the underlying value and DIMS and the number of dimensions of the vector
@@ -28,6 +28,14 @@ where
 		Self {
 			vals: [Default::default(); DIMS],
 		}
+	}
+
+	pub fn iter(&self) -> std::slice::Iter<T> {
+		self.vals.iter()
+	}
+
+	pub fn iter_mut(&mut self) -> std::slice::IterMut<T> {
+		self.vals.iter_mut()
 	}
 }
 
@@ -70,6 +78,16 @@ where
 
 impl<T, const DIMS: usize> Copy for Vector<T, DIMS> where T: Copy {}
 
+impl<T, const DIMS: usize> IntoIterator for Vector<T, DIMS> {
+    type Item = T;
+
+    type IntoIter = array::IntoIter<T,DIMS>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.vals.into_iter()
+    }
+}
+
 #[cfg(test)]
 mod tests {
 	use super::*;
@@ -77,9 +95,7 @@ mod tests {
 	pub const SIZE: usize = 3;
 	pub type VUsizeN = Vector<usize, SIZE>;
 	pub type VIsizeN = Vector<isize, SIZE>;
-	pub type VUsize3 = Vector<usize, 3>;
 	pub type VBoolN = Vector<bool, SIZE>;
-	pub type VBool3 = Vector<bool, 3>;
 
 	#[test]
 	fn mutation() {
