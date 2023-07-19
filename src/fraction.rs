@@ -1,3 +1,5 @@
+//! This module contains generic fractional numbers
+
 use std::ops;
 
 #[derive(Debug, PartialEq)]

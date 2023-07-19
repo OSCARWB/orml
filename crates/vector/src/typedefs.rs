@@ -2,14 +2,21 @@
 
 use crate::Vector;
 
+/// Vector3 usize
 pub type VUsize3 = Vector<usize, 3>;
-
+/// Vector2 i32
 pub type VI32_2 = Vector<i32, 2>;
+/// Vector3 i32
 pub type VI32_3 = Vector<i32, 3>;
+/// Vector4 i32
 pub type VI32_4 = Vector<i32, 4>;
+/// Vector8 i32
 pub type VI32_8 = Vector<i32, 8>;
+/// Vector16 i32
 pub type VI32_16 = Vector<i32, 16>;
+/// Vector32 i32
 pub type VI32_32 = Vector<i32, 32>;
+/// Vector64 i32
 pub type VI32_64 = Vector<i32, 64>;
-
+/// Vector3 bool
 pub type VBool3 = Vector<bool, 3>;
