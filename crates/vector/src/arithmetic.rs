@@ -1,10 +1,38 @@
+//! This module contains implementations of mathematical operations on
+//! Vectors of the same Dimension
+
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Not, Sub, SubAssign};
+
+use traits::SquareRoot;
 
 use super::Vector;
 
 impl<T, const DIMS: usize> Vector<T, DIMS> {
-	pub fn dot() -> Self {
+	/// The dot product between 2 vectors of the same dimension
+	pub fn dot(&self, _rhs: Self) -> Self {
 		todo!()
+	}
+}
+
+impl<T, const DIMS: usize> Vector<T, DIMS>
+where
+	T: Add<Output = T> + Copy + Default + Mul<Output = T>,
+{
+	/// Returns the length of the vector squared
+	pub fn length_squared(&self) -> T {
+		self.vals
+			.into_iter()
+			.fold(Default::default(), |acc, x| (x * x) + acc)
+	}
+}
+
+impl<T, const DIMS: usize> Vector<T, DIMS>
+where
+	T: Add<Output = T> + Copy + Default + Mul<Output = T> + SquareRoot<Output = T>,
+{
+	/// Returns the length of the vector
+	pub fn length(&self) -> T {
+		self.length_squared().sqrt()
 	}
 }
 
@@ -117,7 +145,6 @@ impl<T, const DIMS: usize> MulAssign<T> for Vector<T, DIMS>
 where
 	T: Mul<Output = T> + Default + Copy,
 {
-
 	fn mul_assign(&mut self, rhs: T) {
 		*self = *self * rhs;
 	}
@@ -140,7 +167,6 @@ impl<T, const DIMS: usize> DivAssign<T> for Vector<T, DIMS>
 where
 	T: Div<Output = T> + Default + Copy,
 {
-
 	fn div_assign(&mut self, rhs: T) {
 		*self = *self / rhs;
 	}
@@ -181,6 +207,7 @@ mod tests {
 	use crate::{
 		tests::{VIsizeN, VUsizeN},
 		typedefs::VBool3,
+		Vector,
 	};
 
 	#[test]
@@ -326,6 +353,24 @@ mod tests {
 			let dn = !!e;
 			assert_eq!(e, dn, "\n\ti: {:?} j: {:?}", e, dn);
 		}
+	}
+
+	#[test]
+	fn length_squared() {
+		let expected1: VUsizeN = [1, 1, 1].into();
+		assert_eq!(expected1.length_squared(), 3);
+
+		let expected2: VUsizeN = [2, 2, 2].into();
+		assert_eq!(expected2.length_squared(), 12);
+	}
+
+	#[test]
+	fn length() {
+		let expected1: Vector<f64, 3> = [0.0, 0.0, 3.0].into();
+		assert_eq!(expected1.length(), 3.0);
+
+		let expected2: Vector<f32, 3> = [0.0, 0.0, 3.0].into();
+		assert_eq!(expected2.length(), 3.0);
 	}
 }
 

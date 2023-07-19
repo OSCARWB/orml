@@ -1,11 +1,12 @@
+#![warn(missing_docs)]
+#![allow(dead_code)]
+
 //! Mathimatical Vectors
 //!
 //! This module contains a generic Vector (Vector<T, const DIMS: usize>) that can be any type or size
 //! and type defs of commonly used vector i.e Vec3f64
 
-#![allow(dead_code)]
-
-use std::{ops::{Add, Mul}, array};
+use std::array;
 
 pub mod arithmetic;
 pub mod index;
@@ -29,11 +30,11 @@ where
 			vals: [Default::default(); DIMS],
 		}
 	}
-
+	/// Returns an iter from the underlying array
 	pub fn iter(&self) -> std::slice::Iter<T> {
 		self.vals.iter()
 	}
-
+	/// Returns a mutable iter from the underlying array
 	pub fn iter_mut(&mut self) -> std::slice::IterMut<T> {
 		self.vals.iter_mut()
 	}
@@ -45,17 +46,6 @@ where
 {
 	fn default() -> Self {
 		Self::new()
-	}
-}
-
-impl<T, const DIMS: usize> Vector<T, DIMS>
-where
-	T: Add<Output = T> + Copy + Default + Mul<Output = T>,
-{
-	pub fn length_squared(&self) -> T {
-		self.vals
-			.into_iter()
-			.fold(Default::default(), |acc, x| (x * x) + acc)
 	}
 }
 
@@ -79,13 +69,13 @@ where
 impl<T, const DIMS: usize> Copy for Vector<T, DIMS> where T: Copy {}
 
 impl<T, const DIMS: usize> IntoIterator for Vector<T, DIMS> {
-    type Item = T;
+	type Item = T;
 
-    type IntoIter = array::IntoIter<T,DIMS>;
+	type IntoIter = array::IntoIter<T, DIMS>;
 
-    fn into_iter(self) -> Self::IntoIter {
-        self.vals.into_iter()
-    }
+	fn into_iter(self) -> Self::IntoIter {
+		self.vals.into_iter()
+	}
 }
 
 #[cfg(test)]
@@ -112,14 +102,5 @@ mod tests {
 		for i in 0..SIZE {
 			assert_eq!(vec[i], expected[i]);
 		}
-	}
-
-	#[test]
-	fn length_squared() {
-		let expected1: VUsizeN = [1, 1, 1].into();
-		assert_eq!(expected1.length_squared(), 3);
-
-		let expected2: VUsizeN = [2, 2, 2].into();
-		assert_eq!(expected2.length_squared(), 12);
 	}
 }

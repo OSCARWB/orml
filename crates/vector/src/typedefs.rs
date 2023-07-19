@@ -1,3 +1,5 @@
+//! This module contains definitions of useful sizes and types
+
 use crate::Vector;
 
 pub type VUsize3 = Vector<usize, 3>;

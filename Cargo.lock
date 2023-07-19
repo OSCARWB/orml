@@ -6,9 +6,17 @@ version = 3
 name = "orml"
 version = "0.1.0"
 dependencies = [
+ "traits",
  "vector",
 ]
 
 [[package]]
+name = "traits"
+version = "0.1.0"
+
+[[package]]
 name = "vector"
 version = "0.1.0"
+dependencies = [
+ "traits",
+]

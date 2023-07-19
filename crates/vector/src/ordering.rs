@@ -1,3 +1,6 @@
+//! This module containts implementations for ordering Vectors
+//! by their length^2
+
 use std::ops::{Add, Mul};
 
 use super::Vector;
@@ -33,7 +36,10 @@ where
 
 #[cfg(test)]
 mod tests {
-	use crate::{tests::{VUsizeN, SIZE}, typedefs::VBool3};
+	use crate::{
+		tests::{VUsizeN, SIZE},
+		typedefs::VBool3,
+	};
 
 	#[test]
 	fn partial_eq() {

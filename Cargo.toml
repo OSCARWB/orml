@@ -7,7 +7,13 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-vector = {path = "crates/vector"}
+vector = {path = "crates/vector", optional = true}
+traits = {path = "crates/traits", optional = true}
+
+[features]
+default = ["vector", "traits"]
+vector = ["dep:vector","traits","dep:traits"]
+traits = ["dep:traits"]
 
 [lib]
 name="orml"

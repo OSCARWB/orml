@@ -1,3 +1,6 @@
+//! This module contains implementations for indexing operations
+//! on the elements of the Vector
+
 use std::ops::{Index, IndexMut};
 
 use super::Vector;
