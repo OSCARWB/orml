@@ -9,6 +9,7 @@ use super::Vector;
 
 impl<T, const DIMS: usize> Vector<T, DIMS> {
 	/// The dot product between 2 vectors of the same dimension
+	// TODO: Need to finish this function
 	pub fn dot(&self, _rhs: Self) -> Self {
 		todo!()
 	}
@@ -16,13 +17,12 @@ impl<T, const DIMS: usize> Vector<T, DIMS> {
 
 impl<T, const DIMS: usize> Vector<T, DIMS>
 where
-	T: Add<Output = T> + Copy + Default + Mul<Output = T>,
+	T: Add<Output = T> + Mul<Output = T> + Default + Copy,
 {
 	/// Returns the length of the vector squared
 	pub fn length_squared(&self) -> T {
-		self.vals
-			.into_iter()
-			.fold(Default::default(), |acc, x| (x * x) + acc)
+		self.iter()
+			.fold(Default::default(), |acc, x| (*x * *x) + acc)
 	}
 }
 
@@ -205,25 +205,24 @@ where
 #[cfg(test)]
 mod tests {
 	use crate::{
-		tests::{VIsizeN, VUsizeN},
-		typedefs::VBool3,
+		typedefs::{VBool3, Vec3i32},
 		Vector,
 	};
 
 	#[test]
 	fn add() {
-		let vec1_1: VUsizeN = [1, 1, 1].into();
-		let vec1_2: VUsizeN = [2, 2, 2].into();
-		let expected1: VUsizeN = [3, 3, 3].into();
+		let vec1_1: Vec3i32 = [1, 1, 1].into();
+		let vec1_2: Vec3i32 = [2, 2, 2].into();
+		let expected1: Vec3i32 = [3, 3, 3].into();
 
 		assert_eq!(expected1, vec1_1 + vec1_2);
 	}
 
 	#[test]
 	fn add_assign() {
-		let vec1_1: VUsizeN = [1, 1, 1].into();
-		let vec1_2: VUsizeN = [2, 2, 2].into();
-		let expected1: VUsizeN = [3, 3, 3].into();
+		let vec1_1: Vec3i32 = [1, 1, 1].into();
+		let vec1_2: Vec3i32 = [2, 2, 2].into();
+		let expected1: Vec3i32 = [3, 3, 3].into();
 
 		let mut vec1_3 = vec1_1;
 		vec1_3 += vec1_2;
@@ -233,16 +232,16 @@ mod tests {
 
 	#[test]
 	fn add_t() {
-		let vec1_1: VUsizeN = [1, 1, 1].into();
-		let expected1: VUsizeN = [3, 3, 3].into();
+		let vec1_1: Vec3i32 = [1, 1, 1].into();
+		let expected1: Vec3i32 = [3, 3, 3].into();
 
 		assert_eq!(expected1, vec1_1 + 2);
 	}
 
 	#[test]
 	fn add_assign_t() {
-		let vec1_1: VUsizeN = [1, 1, 1].into();
-		let expected1: VUsizeN = [3, 3, 3].into();
+		let vec1_1: Vec3i32 = [1, 1, 1].into();
+		let expected1: Vec3i32 = [3, 3, 3].into();
 
 		let mut vec1_3 = vec1_1;
 		vec1_3 += 2;
@@ -252,18 +251,18 @@ mod tests {
 
 	#[test]
 	fn sub() {
-		let vec1_1: VUsizeN = [3, 3, 3].into();
-		let vec1_2: VUsizeN = [2, 2, 2].into();
-		let expected1: VUsizeN = [1, 1, 1].into();
+		let vec1_1: Vec3i32 = [3, 3, 3].into();
+		let vec1_2: Vec3i32 = [2, 2, 2].into();
+		let expected1: Vec3i32 = [1, 1, 1].into();
 
 		assert_eq!(expected1, vec1_1 - vec1_2);
 	}
 
 	#[test]
 	fn sub_assign() {
-		let vec1_1: VUsizeN = [3, 3, 3].into();
-		let vec1_2: VUsizeN = [2, 2, 2].into();
-		let expected1: VUsizeN = [1, 1, 1].into();
+		let vec1_1: Vec3i32 = [3, 3, 3].into();
+		let vec1_2: Vec3i32 = [2, 2, 2].into();
+		let expected1: Vec3i32 = [1, 1, 1].into();
 
 		let mut vec1_3 = vec1_1;
 		vec1_3 -= vec1_2;
@@ -273,16 +272,16 @@ mod tests {
 
 	#[test]
 	fn sub_t() {
-		let vec1_1: VUsizeN = [3, 3, 3].into();
-		let expected1: VUsizeN = [1, 1, 1].into();
+		let vec1_1: Vec3i32 = [3, 3, 3].into();
+		let expected1: Vec3i32 = [1, 1, 1].into();
 
 		assert_eq!(expected1, vec1_1 - 2);
 	}
 
 	#[test]
 	fn sub_assign_t() {
-		let vec1_1: VUsizeN = [3, 3, 3].into();
-		let expected1: VUsizeN = [1, 1, 1].into();
+		let vec1_1: Vec3i32 = [3, 3, 3].into();
+		let expected1: Vec3i32 = [1, 1, 1].into();
 
 		let mut vec1_3 = vec1_1;
 		vec1_3 -= 2;
@@ -292,16 +291,16 @@ mod tests {
 
 	#[test]
 	fn mul_t() {
-		let vec1_1: VUsizeN = [1, 1, 1].into();
-		let expected1: VUsizeN = [2, 2, 2].into();
+		let vec1_1: Vec3i32 = [1, 1, 1].into();
+		let expected1: Vec3i32 = [2, 2, 2].into();
 
 		assert_eq!(expected1, vec1_1 * 2);
 	}
 
 	#[test]
 	fn mul_assign_t() {
-		let vec1_1: VUsizeN = [1, 1, 1].into();
-		let expected1: VUsizeN = [2, 2, 2].into();
+		let vec1_1: Vec3i32 = [1, 1, 1].into();
+		let expected1: Vec3i32 = [2, 2, 2].into();
 
 		let mut vec1_3 = vec1_1;
 		vec1_3 *= 2;
@@ -311,16 +310,16 @@ mod tests {
 
 	#[test]
 	fn div_t() {
-		let vec1_1: VUsizeN = [2, 2, 2].into();
-		let expected1: VUsizeN = [1, 1, 1].into();
+		let vec1_1: Vec3i32 = [2, 2, 2].into();
+		let expected1: Vec3i32 = [1, 1, 1].into();
 
 		assert_eq!(expected1, vec1_1 / 2);
 	}
 
 	#[test]
 	fn div_assign_t() {
-		let vec1_1: VUsizeN = [2, 2, 2].into();
-		let expected1: VUsizeN = [1, 1, 1].into();
+		let vec1_1: Vec3i32 = [2, 2, 2].into();
+		let expected1: Vec3i32 = [1, 1, 1].into();
 
 		let mut vec1_3 = vec1_1;
 		vec1_3 /= 2;
@@ -330,8 +329,8 @@ mod tests {
 
 	#[test]
 	fn neg() {
-		let vec1_1: VIsizeN = [1, 1, 1].into();
-		let expected1: VIsizeN = [-1, -1, -1].into();
+		let vec1_1: Vec3i32 = [1, 1, 1].into();
+		let expected1: Vec3i32 = [-1, -1, -1].into();
 
 		assert_eq!(expected1, -vec1_1);
 	}
@@ -357,10 +356,10 @@ mod tests {
 
 	#[test]
 	fn length_squared() {
-		let expected1: VUsizeN = [1, 1, 1].into();
+		let expected1: Vec3i32 = [1, 1, 1].into();
 		assert_eq!(expected1.length_squared(), 3);
 
-		let expected2: VUsizeN = [2, 2, 2].into();
+		let expected2: Vec3i32 = [2, 2, 2].into();
 		assert_eq!(expected2.length_squared(), 12);
 	}
 

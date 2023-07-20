@@ -36,10 +36,7 @@ where
 
 #[cfg(test)]
 mod tests {
-	use crate::{
-		tests::{VUsizeN, SIZE},
-		typedefs::VBool3,
-	};
+	use crate::typedefs::{VBool3, Vec3i32};
 
 	#[test]
 	fn partial_eq() {
@@ -70,9 +67,9 @@ mod tests {
 	#[test]
 	fn partial_ord() {
 		let mut count = 0;
-		let combos: Vec<VUsizeN> = Vec::with_capacity(SIZE)
+		let combos: Vec<Vec3i32> = Vec::with_capacity(3)
 			.into_iter()
-			.map(|_: VUsizeN| {
+			.map(|_: Vec3i32| {
 				let temp = [count, count, count].into();
 				count += 1;
 				temp
@@ -116,9 +113,9 @@ mod tests {
 	#[test]
 	fn ord() {
 		let mut count = 0;
-		let combos: Vec<VUsizeN> = Vec::with_capacity(SIZE)
+		let combos: Vec<Vec3i32> = Vec::with_capacity(3)
 			.into_iter()
-			.map(|_: VUsizeN| {
+			.map(|_: Vec3i32| {
 				let temp = [count, count, count].into();
 				count += 1;
 				temp

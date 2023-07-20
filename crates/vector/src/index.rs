@@ -39,31 +39,49 @@ impl<T, const DIMS: usize> IndexMut<usize> for Vector<T, DIMS> {
 
 #[cfg(test)]
 mod tests {
+	use crate::typedefs::Vec3i32;
+
 	use super::*;
-	use crate::tests::{VUsizeN, SIZE};
 
 	#[test]
 	fn valid_index() {
-		let mut vec: VUsizeN = Vector::new();
-		for i in 0..SIZE {
-			vec[i] = i;
+		let mut vec: Vec3i32 = Vector::new();
+		for i in 0..3 {
+			vec[i] = i as i32;
 		}
 
-		for i in 0..SIZE {
-			assert_eq!(vec[i], i);
+		for i in 0..3 {
+			assert_eq!(vec[i], i as i32);
 		}
 	}
 
 	#[test]
 	#[should_panic]
 	fn invalid_index() {
-		let mut vec: VUsizeN = Vector::new();
-		for i in 0..SIZE {
+		let mut vec: Vec3i32 = Vector::new();
+		for i in 0..3 {
 			vec[4] = i;
 		}
 
-		for i in 0..SIZE {
+		for i in 0..3 {
 			assert_eq!(vec[4], i);
+		}
+	}
+
+	#[test]
+	fn mutation() {
+		let mut vec: Vec3i32 = Vector::new();
+		let expected: Vec3i32 = [0, 5, 0].into();
+
+		for i in 0..3 {
+			vec[i] = i as i32;
+		}
+
+		vec[1] = 5;
+		vec[2] = 0;
+
+		for i in 0..3 {
+			assert_eq!(vec[i], expected[i]);
 		}
 	}
 }

@@ -3,7 +3,9 @@ pub trait SquareRoot {
 	fn sqrt(&self) -> Self::Output;
 }
 
+#[cfg(feature = "impls")]
 pub mod impls {
+	#[cfg(feature = "impl-f64")]
 	pub mod f64 {
 		use crate::SquareRoot;
 
@@ -16,6 +18,7 @@ pub mod impls {
 		}
 	}
 
+	#[cfg(feature = "impl-f32")]
 	pub mod f32 {
 		use crate::SquareRoot;
 

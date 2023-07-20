@@ -5,13 +5,13 @@ use crate::Vector;
 /// Vector3 usize
 pub type VUsize3 = Vector<usize, 3>;
 /// Vector2 i32
-pub type VI32_2 = Vector<i32, 2>;
+pub type Vec2i32 = Vector<i32, 2>;
 /// Vector3 i32
-pub type VI32_3 = Vector<i32, 3>;
+pub type Vec3i32 = Vector<i32, 3>;
 /// Vector4 i32
-pub type VI32_4 = Vector<i32, 4>;
+pub type Vec4i32 = Vector<i32, 4>;
 /// Vector8 i32
-pub type VI32_8 = Vector<i32, 8>;
+pub type Vec8i32 = Vector<i32, 8>;
 /// Vector16 i32
 pub type VI32_16 = Vector<i32, 16>;
 /// Vector32 i32
