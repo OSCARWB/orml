@@ -19,6 +19,18 @@ pub struct Vector<T, const DIMS: usize> {
 	vals: [T; DIMS],
 }
 
+impl<T, const DIMS: usize> Vector<T, DIMS> {
+	/// Creates a new Vector<T,DIMS> from an Array [T;DIMS]
+	pub fn from_array(arr: [T; DIMS]) -> Self {
+		arr.into()
+	}
+	/// Returns the numer of dimensions in the Vector
+	// Used len() to keep consistent with other Rust containers
+	pub fn len(&self) -> usize {
+		DIMS
+	}
+}
+
 impl<T, const DIMS: usize> Vector<T, DIMS>
 where
 	T: Copy + Default,
@@ -62,4 +74,11 @@ impl<T, const DIMS: usize> Copy for Vector<T, DIMS> where T: Copy {}
 #[cfg(test)]
 mod tests {
 	use super::*;
+
+	#[test]
+	fn clone() {
+		let a = Vector::from_array([1, 1, 1]);
+
+		assert_eq!(a, a.clone());
+	}
 }
