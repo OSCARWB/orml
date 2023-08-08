@@ -24,10 +24,14 @@ impl<T, const DIMS: usize> Vector<T, DIMS> {
 	pub fn from_array(arr: [T; DIMS]) -> Self {
 		arr.into()
 	}
-	/// Returns the numer of dimensions in the Vector
+	/// Returns the numer of dimensions of the Vector
 	// Used len() to keep consistent with other Rust containers
 	pub fn len(&self) -> usize {
 		DIMS
+	}
+	/// Returns true if the Vector is 0 dimensional
+	pub fn is_empty(&self) -> bool {
+		DIMS == 0
 	}
 }
 
