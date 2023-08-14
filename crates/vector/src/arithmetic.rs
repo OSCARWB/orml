@@ -205,7 +205,7 @@ where
 #[cfg(test)]
 mod tests {
 	use crate::{
-		typedefs::{VBool3, Vec3i32},
+		typedefs::{Vec3Bool, Vec3i32},
 		Vector,
 	};
 
@@ -337,7 +337,7 @@ mod tests {
 
 	#[test]
 	fn not() {
-		let combos: [VBool3; 8] = [
+		let combos: [Vec3Bool; 8] = [
 			[false, false, false].into(),
 			[false, false, true].into(),
 			[false, true, false].into(),
