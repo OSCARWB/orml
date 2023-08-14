@@ -7,11 +7,30 @@ use traits::SquareRoot;
 
 use super::Vector;
 
-impl<T, const DIMS: usize> Vector<T, DIMS> {
-	/// The dot product between 2 vectors of the same dimension
-	// TODO: Need to finish this function
-	pub fn dot(&self, _rhs: Self) -> Self {
-		todo!()
+impl<T, const DIMS: usize> Vector<T, DIMS>
+where
+	T: Add<Output = T> + Mul<Output = T> + Default + Copy,
+{
+	/// The dot product between 2 vectors of the same dimension. Also know as the scalar product
+	pub fn dot(&self, rhs: Self) -> T {
+		std::iter::zip(self.iter(), rhs.iter())
+			.fold(Default::default(), |acc: T, x| acc + (*x.0 * *x.1))
+	}
+}
+
+impl<T> Vector<T,3>
+where
+	T: Sub<Output = T> + Mul<Output = T> + Default + Copy,
+{
+	/// The cross product between 2 vectors of dimension 3
+	pub fn cross(&self, rhs: Self) -> Self {
+		let a = self;
+		let b = rhs;
+		Self { vals: [
+			(a[1]*b[2]) - (a[2]*b[1]),
+			(a[2]*b[0]) - (a[0]*b[2]),
+			(a[0]*b[1]) - (a[1]*b[0]),
+		] }
 	}
 }
 
@@ -28,7 +47,7 @@ where
 
 impl<T, const DIMS: usize> Vector<T, DIMS>
 where
-	T: Add<Output = T> + Copy + Default + Mul<Output = T> + SquareRoot<Output = T>,
+	T: Add<Output = T> + Mul<Output = T> + Copy + Default + SquareRoot<Output = T>,
 {
 	/// Returns the length of the vector
 	pub fn length(&self) -> T {
@@ -204,7 +223,8 @@ where
 
 #[cfg(test)]
 mod tests {
-	use crate::{
+
+use crate::{
 		typedefs::{Vec3Bool, Vec3i32},
 		Vector,
 	};
@@ -352,6 +372,17 @@ mod tests {
 			let dn = !!e;
 			assert_eq!(e, dn, "\n\ti: {:?} j: {:?}", e, dn);
 		}
+	}
+
+	#[test]
+	fn dot() {
+		let vec1: Vec3i32 = [1, 3, -5].into();
+		let vec2: Vec3i32 = [4, -2, -1].into();
+		let expected1 = 3;
+		assert_eq!(expected1, vec1.dot(vec2));
+
+		let expected2 = 35;
+		assert_eq!(expected2,vec1.dot(vec1));
 	}
 
 	#[test]
