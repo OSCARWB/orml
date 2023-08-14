@@ -36,11 +36,11 @@ where
 
 #[cfg(test)]
 mod tests {
-	use crate::typedefs::{VBool3, Vec3i32};
+	use crate::typedefs::{Vec3Bool, Vec3i32};
 
 	#[test]
 	fn partial_eq() {
-		let combos: [VBool3; 8] = [
+		let combos: [Vec3Bool; 8] = [
 			[false, false, false].into(),
 			[false, false, true].into(),
 			[false, true, false].into(),
