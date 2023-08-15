@@ -1,14 +1,16 @@
 [package]
-name = "vector"
+name = "quaternion"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-traits = {path="../traits"}
-num-traits = {workspace = true}
+vector = { path = "../vector", optional = true}
 
 [features]
-#default = ["num-traits"]
-#num-traits = []
+default = ["vector"]
+vector = ["dep:vector"]
+
+[dev-dependencies]
+

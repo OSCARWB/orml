@@ -13,7 +13,7 @@ pub mod ordering;
 pub mod typedefs;
 
 /// A Mathimatical Vector
-/// Takes in a type T as the underlying value and DIMS and the number of dimensions of the vector
+/// Takes in a type T as the underlying type and DIMS and the number of dimensions of the vector
 #[derive(Debug)]
 pub struct Vector<T, const DIMS: usize> {
 	vals: [T; DIMS],

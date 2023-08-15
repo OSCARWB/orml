@@ -3,6 +3,7 @@
 
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Not, Sub, SubAssign};
 
+use num_traits::identities::One;
 use traits::SquareRoot;
 
 use super::Vector;
@@ -19,8 +20,19 @@ where
 
 	/// Returns the length of the vector squared
 	pub fn length_squared(&self) -> T {
-		self.iter()
-			.fold(Default::default(), |acc, x| (*x * *x) + acc)
+		self.dot(*self)
+	}
+}
+
+impl<T, const DIMS: usize> Vector<T, DIMS>
+where
+	T: Div<Output = T> + One,
+{
+	/// Returns the reciprocal of the vector. ie 1/x for each element x of the vector
+	pub fn reciprocal(self) -> Self {
+		Self {
+			vals: self.vals.map(|x| T::one()/x)
+		}
 	}
 }
 
@@ -224,7 +236,7 @@ where
 // 	}
 // }
 
-// Div Impl
+// DivT Impl
 impl<T, const DIMS: usize> Div<T> for Vector<T, DIMS>
 where
 	T: Div<Output = T> + Default + Copy,
@@ -238,7 +250,7 @@ where
 	}
 }
 
-// DivAssign Impl
+// DivAssignT Impl
 impl<T, const DIMS: usize> DivAssign<T> for Vector<T, DIMS>
 where
 	T: Div<Output = T> + Default + Copy,

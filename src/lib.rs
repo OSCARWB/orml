@@ -15,3 +15,6 @@ pub use ::vector::Vector;
 pub use traits;
 
 pub mod fraction;
+
+#[cfg(feature = "quaternion")]
+pub use ::quaternion;
