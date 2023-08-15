@@ -35,21 +35,26 @@ impl<T, const DIMS: usize> Vector<T, DIMS> {
 	}
 }
 
+#[allow(clippy::uninit_assumed_init)]
 impl<T, const DIMS: usize> Vector<T, DIMS>
 where
-	T: Copy + Default,
+	T: Default,
 {
 	/// Create a new Vector
 	pub fn new() -> Self {
 		Self {
-			vals: [Default::default(); DIMS],
+			vals: unsafe {
+				std::mem::MaybeUninit::<[T; DIMS]>::uninit()
+					.assume_init()
+					.map(|_| Default::default())
+			},
 		}
 	}
 }
 
 impl<T, const DIMS: usize> Default for Vector<T, DIMS>
 where
-	T: Copy + Default,
+	T: Default,
 {
 	fn default() -> Self {
 		Self::new()
@@ -78,6 +83,17 @@ impl<T, const DIMS: usize> Copy for Vector<T, DIMS> where T: Copy {}
 #[cfg(test)]
 mod tests {
 	use super::*;
+
+	#[test]
+	fn new() {
+		let i1: Vector<i32, 64> = Vector::new();
+		let i2 = Vector::from_array([Default::default();64]);
+		assert_eq!(i1, i2);
+
+		let f1: Vector<f64, 64> = Vector::new();
+		let f2 = Vector::from_array([Default::default();64]);
+		assert_eq!(f1, f2);
+	}
 
 	#[test]
 	fn clone() {

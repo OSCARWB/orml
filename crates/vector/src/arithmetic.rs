@@ -31,7 +31,7 @@ where
 	/// Returns the reciprocal of the vector. ie 1/x for each element x of the vector
 	pub fn reciprocal(self) -> Self {
 		Self {
-			vals: self.vals.map(|x| T::one()/x)
+			vals: self.vals.map(|x| T::one() / x),
 		}
 	}
 }
