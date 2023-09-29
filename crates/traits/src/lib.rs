@@ -58,7 +58,13 @@ pub mod fns;
 pub mod impls {
 	#[cfg(feature = "impl-f64")]
 	pub mod f64 {
-		use crate::fns::SquareRoot;
+		use crate::fns::{SquareRoot,trig::*};
+
+		use crate::impl_trivial_trig_all;
+		use crate::impl_trivial_trig;
+		
+		
+		impl_trivial_trig_all!(f64);
 
 		impl SquareRoot for f64 {
 			fn sqrt(&self) -> Self {
@@ -69,7 +75,13 @@ pub mod impls {
 
 	#[cfg(feature = "impl-f32")]
 	pub mod f32 {
-		use crate::fns::SquareRoot;
+		use crate::fns::{SquareRoot,trig::*};
+
+		use crate::impl_trivial_trig_all;
+		use crate::impl_trivial_trig;
+		
+		
+		impl_trivial_trig_all!(f32);
 
 		impl SquareRoot for f32 {
 			fn sqrt(&self) -> Self {

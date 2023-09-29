@@ -68,11 +68,11 @@ where
 	}
 }
 
-impl<T> From<(T,T,T,T)> for Quaternion<T>
+impl<T> From<(T, T, T, T)> for Quaternion<T>
 where
 	T:,
 {
-	fn from(value: (T,T,T,T)) -> Self {
+	fn from(value: (T, T, T, T)) -> Self {
 		Self {
 			x: value.0,
 			y: value.1,

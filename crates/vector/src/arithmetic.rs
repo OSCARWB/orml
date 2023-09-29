@@ -99,7 +99,7 @@ macro_rules! impl_op {
 				for (i, e) in temp.iter_mut().enumerate() {
 					*e = $bound::$func(&self.vals[i], &rhs.vals[i]);
 				}
-				
+
 				Self::Output { vals: temp }
 			}
 		}
@@ -148,7 +148,7 @@ macro_rules! impl_op_t {
 			#[inline]
 			fn $func(self, rhs: T) -> Self::Output {
 				Self {
-					vals: self.vals.map(|e| $bound::$func(&e,&rhs)),
+					vals: self.vals.map(|e| $bound::$func(&e, &rhs)),
 				}
 			}
 		}
@@ -162,7 +162,6 @@ impl_op_assign!(Vector<T, DIMS>,add_assign,AddAssign,add,Add);
 
 // AddT Impl
 impl_op_t!(Vector<T, DIMS>,add,Add);
-
 
 // AddAssignT Impl
 impl<T, const DIMS: usize> AddAssign<T> for Vector<T, DIMS>
@@ -223,7 +222,6 @@ impl_op_vers!(Vector<T, DIMS>,div,Div);
 
 // DivAssign Impl
 impl_op_assign!(Vector<T, DIMS>,div_assign,DivAssign,div,Div);
-
 
 // DivT Impl
 impl_op_t!(Vector<T, DIMS>,div,Div);

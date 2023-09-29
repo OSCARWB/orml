@@ -1,5 +1,5 @@
 use std::{
-	fmt::{self, Binary, Display, Octal, UpperHex},
+	fmt::{Binary, Display, Octal, UpperHex},
 	ops::{
 		Add, AddAssign, Deref, DerefMut, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub,
 		SubAssign,
@@ -12,7 +12,7 @@ use astro_float::{BigFloat, Consts, RoundingMode};
 
 use lazy_static::lazy_static;
 use num_traits::{Num, One, Zero};
-use orml_traits::fns::SquareRoot;
+use orml_traits::{fns::{trig::Acos, SquareRoot}, impl_all_trig};
 
 const P: usize = 1024;
 const RM: RoundingMode = RoundingMode::None;
@@ -129,26 +129,39 @@ impl Clone for EasyBigFloat {
 }
 
 // DISPLAY
-impl Display for EasyBigFloat {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		Display::fmt(&self.val, f)
-	}
+macro_rules! impl_display {
+	($bound:ident) => {
+		impl $bound for EasyBigFloat {
+			fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+				$bound::fmt(&self.val, f)
+			}
+		}
+	};
 }
-impl Binary for EasyBigFloat {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		Binary::fmt(&self.val, f)
-	}
-}
-impl Octal for EasyBigFloat {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		Octal::fmt(&self.val, f)
-	}
-}
-impl UpperHex for EasyBigFloat {
-	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		UpperHex::fmt(&self.val, f)
-	}
-}
+impl_display!(Binary);
+impl_display!(Octal);
+impl_display!(UpperHex);
+impl_display!(Display);
+// impl Display for EasyBigFloat {
+// 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+// 		Display::fmt(&self.val, f)
+// 	}
+// }
+// impl Binary for EasyBigFloat {
+// 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+// 		Binary::fmt(&self.val, f)
+// 	}
+// }
+// impl Octal for EasyBigFloat {
+// 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+// 		Octal::fmt(&self.val, f)
+// 	}
+// }
+// impl UpperHex for EasyBigFloat {
+// 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+// 		UpperHex::fmt(&self.val, f)
+// 	}
+// }
 
 // DIV
 //
@@ -454,6 +467,29 @@ impl SquareRoot for EasyBigFloat {
 		}
 	}
 }
+
+use orml_traits::fns::trig::*;
+
+macro_rules! CC {
+	() => {
+		CC.lock().unwrap()
+	};
+}
+
+
+macro_rules! impl_trig {
+	($bound:ident,$fn:ident) => {
+		impl $bound for EasyBigFloat {
+			fn $fn(&self) -> Self {
+				Self {
+					val: BigFloat::$fn(self, P, RM, &mut CC!()),
+				}
+			}
+		}
+	};
+}
+
+impl_all_trig!(impl_trig);
 
 #[cfg(test)]
 mod tests {
