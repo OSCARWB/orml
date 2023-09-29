@@ -4,7 +4,7 @@
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Not, Sub, SubAssign};
 
 use num_traits::identities::One;
-use traits::fns::SquareRoot;
+use orml_traits::fns::SquareRoot;
 
 use super::Vector;
 

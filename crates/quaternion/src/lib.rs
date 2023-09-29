@@ -6,7 +6,7 @@
 //!
 //! This module contains a generic Quaternion that can be any type or size
 
-use ::vector::Vector;
+use orml_vector::Vector;
 
 pub mod arithmetic;
 #[cfg(feature = "vector")]

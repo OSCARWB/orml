@@ -4,7 +4,7 @@ use std::ops::{Add, Div, Mul, MulAssign, Neg, Sub};
 
 use crate::Quaternion;
 use num_traits::One;
-use traits::fns::SquareRoot;
+use orml_traits::fns::SquareRoot;
 
 impl<T> Quaternion<T>
 where

@@ -49,17 +49,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
-name = "easy_big_float"
-version = "0.1.0"
-dependencies = [
- "astro-float",
- "lazy_static",
- "num-traits",
- "traits",
- "vector",
-]
-
-[[package]]
 name = "either"
 version = "1.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -116,10 +105,43 @@ dependencies = [
 name = "orml"
 version = "0.1.0"
 dependencies = [
- "easy_big_float",
- "quaternion",
- "traits",
- "vector",
+ "orml_easy_big_float",
+ "orml_quaternion",
+ "orml_traits",
+ "orml_vector",
+]
+
+[[package]]
+name = "orml_easy_big_float"
+version = "0.1.0"
+dependencies = [
+ "astro-float",
+ "lazy_static",
+ "num-traits",
+ "orml_traits",
+ "orml_vector",
+]
+
+[[package]]
+name = "orml_quaternion"
+version = "0.1.0"
+dependencies = [
+ "glam",
+ "num-traits",
+ "orml_traits",
+ "orml_vector",
+]
+
+[[package]]
+name = "orml_traits"
+version = "0.1.0"
+
+[[package]]
+name = "orml_vector"
+version = "0.1.0"
+dependencies = [
+ "num-traits",
+ "orml_traits",
 ]
 
 [[package]]
@@ -135,16 +157,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3d433d9f1a3e8c1263d9456598b16fec66f4acc9a74dacffd35c7bb09b3a1328"
 dependencies = [
  "unicode-ident",
-]
-
-[[package]]
-name = "quaternion"
-version = "0.1.0"
-dependencies = [
- "glam",
- "num-traits",
- "traits",
- "vector",
 ]
 
 [[package]]
@@ -229,22 +241,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "traits"
-version = "0.1.0"
-
-[[package]]
 name = "unicode-ident"
 version = "1.0.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3354b9ac3fae1ff6755cb6db53683adb661634f67557942dea4facebec0fee4b"
-
-[[package]]
-name = "vector"
-version = "0.1.0"
-dependencies = [
- "num-traits",
- "traits",
-]
 
 [[package]]
 name = "wasi"

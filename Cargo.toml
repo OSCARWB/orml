@@ -5,6 +5,10 @@ members = ["crates/*"]
 num-traits = "0.2.16"
 astro-float = "0.7.1"
 lazy_static = "1.4.0"
+orml_vector = {path = "crates/vector"}
+orml_traits = {path = "crates/traits"}
+orml_quaternion = { path = "crates/quaternion"}
+orml_easy_big_float = {path = "crates/easy_big_float"}
 
 [package]
 name = "orml"
@@ -12,10 +16,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-vector = {path = "crates/vector"}
-traits = {path = "crates/traits"}
-quaternion = { path = "crates/quaternion"}
-easy_big_float = {path = "crates/easy_big_float"}
+orml_vector = {workspace = true}
+orml_traits = {workspace = true}
+orml_quaternion = {workspace = true}
+orml_easy_big_float = {workspace = true}
 
 [features]
 # default = ["vector", "traits", "quaternion", "easy_big_float"]

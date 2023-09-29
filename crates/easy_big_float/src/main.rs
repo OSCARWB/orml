@@ -1,5 +1,5 @@
-use easy_big_float::EasyBigFloat;
-use vector::Vector;
+use orml_easy_big_float::EasyBigFloat;
+use orml_vector::Vector;
 
 fn main() {
 	let a = Vector::from_array([

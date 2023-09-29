@@ -1,5 +1,5 @@
 [package]
-name = "easy_big_float"
+name = "orml_easy_big_float"
 version = "0.1.0"
 edition = "2021"
 
@@ -9,5 +9,5 @@ edition = "2021"
 astro-float = {workspace = true}
 lazy_static = {workspace = true}
 num-traits = {workspace = true}
-traits = { path="../traits" }
-vector = { path="../vector" }
+orml_vector = {workspace = true}
+orml_traits = {workspace = true}

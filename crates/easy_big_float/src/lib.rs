@@ -12,7 +12,7 @@ use astro_float::{BigFloat, Consts, RoundingMode};
 
 use lazy_static::lazy_static;
 use num_traits::{Num, One, Zero};
-use traits::fns::SquareRoot;
+use orml_traits::fns::SquareRoot;
 
 const P: usize = 1024;
 const RM: RoundingMode = RoundingMode::None;
@@ -457,7 +457,7 @@ impl SquareRoot for EasyBigFloat {
 
 #[cfg(test)]
 mod tests {
-	use vector::Vector;
+	use orml_vector::Vector;
 
 	use super::*;
 

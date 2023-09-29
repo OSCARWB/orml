@@ -11,14 +11,14 @@
 //! - and many more to come
 
 //#[cfg(feature = "vector")]
-pub use vector;
+pub use orml_vector as vector;
 
 //#[cfg(feature = "traits")]
-pub use traits;
+pub use orml_traits as traits;
 
 pub mod fraction;
 
 //#[cfg(feature = "quaternion")]
-pub use quaternion;
+pub use orml_quaternion as quaternion;
 
-pub use easy_big_float;
+pub use orml_easy_big_float as easy_big_float;
