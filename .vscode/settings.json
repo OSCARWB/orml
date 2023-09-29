@@ -1,5 +1,6 @@
 {
 	"rust-analyzer.linkedProjects": [
-		".\\crates\\vector\\Cargo.toml"
+		".\\crates\\vector\\Cargo.toml",
+		".\\crates\\easy_big_float\\Cargo.toml"
 	]
 }

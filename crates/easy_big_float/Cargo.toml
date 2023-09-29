@@ -1,0 +1,13 @@
+[package]
+name = "easy_big_float"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+astro-float = "0.7.1"
+lazy_static = "1.4.0"
+num-traits = "0.2.16"
+traits = { path="../traits" }
+vector = { path="../vector" }
