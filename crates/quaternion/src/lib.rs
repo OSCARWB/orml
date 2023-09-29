@@ -1,6 +1,12 @@
-// #![warn(missing_docs)]
+#![warn(missing_docs)]
 // #![warn(missing_doc_code_examples)]
 #![allow(dead_code)]
+
+//! Quaternions
+//!
+//! This module contains a generic Quaternion that can be any type or size
+
+use ::vector::Vector;
 
 pub mod arithmetic;
 #[cfg(feature = "vector")]
@@ -8,15 +14,23 @@ pub mod vector;
 
 pub mod ordering;
 
+/// A Quaternion
+/// Takes in a type T as the underlying type of the Quaternion
+
 #[derive(Debug)]
 pub struct Quaternion<T> {
+	/// X component
 	pub x: T,
+	/// Y component
 	pub y: T,
+	/// Z component
 	pub z: T,
+	/// W component
 	pub w: T,
 }
 
 impl<T> Quaternion<T> {
+	/// TODO: Documentation
 	pub fn zip(
 		self,
 		rhs: Self,
@@ -24,6 +38,7 @@ impl<T> Quaternion<T> {
 		std::iter::zip::<[T; 4], [T; 4]>(self.into(), rhs.into())
 	}
 
+	/// Returns an Array [T;4] from the interal representation
 	pub fn to_array(self) -> [T; 4] {
 		self.into()
 	}
@@ -33,6 +48,7 @@ impl<T> Quaternion<T>
 where
 	T: Copy,
 {
+	/// Creates a new Quaternion<T> from an Array [T;3]
 	pub fn from_array(arr: [T; 4]) -> Quaternion<T> {
 		arr.into()
 	}

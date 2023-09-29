@@ -3,7 +3,7 @@
 #![allow(dead_code)]
 
 //! ORML: Oscar's Rust Math Library
-//! A library full of maths, including such delight as:
+//! A library full of maths, including such delights as:
 //! - fractions
 //! - vectors
 //! - and many more to come

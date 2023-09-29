@@ -7,6 +7,8 @@ use super::Vector;
 
 impl<T, const DIMS: usize> Index<usize> for Vector<T, DIMS> {
 	type Output = T;
+
+	#[inline]
 	fn index(&self, index: usize) -> &Self::Output {
 		if index < DIMS {
 			&self.vals[index]
@@ -28,6 +30,7 @@ impl<T, const DIMS: usize> Index<usize> for Vector<T, DIMS> {
 // }
 
 impl<T, const DIMS: usize> IndexMut<usize> for Vector<T, DIMS> {
+	#[inline]
 	fn index_mut(&mut self, index: usize) -> &mut Self::Output {
 		if index < DIMS {
 			&mut self.vals[index]

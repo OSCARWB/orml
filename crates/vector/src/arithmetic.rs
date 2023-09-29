@@ -4,7 +4,7 @@
 use std::ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Not, Sub, SubAssign};
 
 use num_traits::identities::One;
-use traits::SquareRoot;
+use traits::fns::SquareRoot;
 
 use super::Vector;
 
@@ -13,14 +13,27 @@ where
 	T: Add<Output = T> + Mul<Output = T> + Default + Copy,
 {
 	/// The dot product between 2 vectors of the same dimension. Also know as the scalar product
+	#[inline]
 	pub fn dot(&self, rhs: Self) -> T {
 		std::iter::zip(self.iter(), rhs.iter())
 			.fold(Default::default(), |acc: T, x| acc + (*x.0 * *x.1))
 	}
 
 	/// Returns the length of the vector squared
+	#[inline]
 	pub fn length_squared(&self) -> T {
 		self.dot(*self)
+	}
+}
+
+impl<T, const DIMS: usize> Vector<T, DIMS>
+where
+	T: Add<Output = T> + Mul<Output = T> + Copy + Default + SquareRoot,
+{
+	/// Returns the length of the vector
+	#[inline]
+	pub fn length(&self) -> T {
+		self.length_squared().sqrt()
 	}
 }
 
@@ -29,10 +42,21 @@ where
 	T: Div<Output = T> + One,
 {
 	/// Returns the reciprocal of the vector. ie 1/x for each element x of the vector
+	#[inline]
 	pub fn reciprocal(self) -> Self {
 		Self {
 			vals: self.vals.map(|x| T::one() / x),
 		}
+	}
+}
+
+impl<T, const DIMS: usize> Vector<T, DIMS>
+where
+	T: Add<Output = T> + Mul<Output = T> + Copy + Default + SquareRoot + Div<Output = T> + One,
+{
+	/// Returns the vector normalised to length 1
+	pub fn normalise(self) -> Self {
+		self * (T::one() / self.length())
 	}
 }
 
@@ -41,6 +65,7 @@ where
 	T: Sub<Output = T> + Mul<Output = T> + Default + Copy,
 {
 	/// The cross product between 2 vectors of dimension 3
+	#[inline]
 	pub fn cross(&self, rhs: Self) -> Self {
 		let a = self;
 		let b = rhs;
@@ -54,16 +79,6 @@ where
 	}
 }
 
-impl<T, const DIMS: usize> Vector<T, DIMS>
-where
-	T: Add<Output = T> + Mul<Output = T> + Copy + Default + SquareRoot<Output = T>,
-{
-	/// Returns the length of the vector
-	pub fn length(&self) -> T {
-		self.length_squared().sqrt()
-	}
-}
-
 // Add Impl
 impl<T, const DIMS: usize> Add for Vector<T, DIMS>
 where
@@ -71,6 +86,7 @@ where
 {
 	type Output = Self;
 
+	#[inline]
 	fn add(self, rhs: Self) -> Self::Output {
 		let mut temp = [Default::default(); DIMS];
 		for (i, e) in temp.iter_mut().enumerate() {
@@ -85,6 +101,7 @@ impl<T: Add<Output = T>, const DIMS: usize> AddAssign for Vector<T, DIMS>
 where
 	T: Default + Copy,
 {
+	#[inline]
 	fn add_assign(&mut self, rhs: Self) {
 		*self = *self + rhs;
 	}
@@ -97,6 +114,7 @@ where
 {
 	type Output = Self;
 
+	#[inline]
 	fn add(self, rhs: T) -> Self::Output {
 		Self {
 			vals: self.vals.map(|e| e + rhs),
@@ -109,6 +127,7 @@ impl<T: Add<Output = T>, const DIMS: usize> AddAssign<T> for Vector<T, DIMS>
 where
 	T: Default + Copy,
 {
+	#[inline]
 	fn add_assign(&mut self, rhs: T) {
 		*self = *self + rhs;
 	}
@@ -121,6 +140,7 @@ where
 {
 	type Output = Self;
 
+	#[inline]
 	fn sub(self, rhs: Self) -> Self::Output {
 		let mut temp = [Default::default(); DIMS];
 		for (i, e) in temp.iter_mut().enumerate() {
@@ -135,6 +155,7 @@ impl<T, const DIMS: usize> SubAssign for Vector<T, DIMS>
 where
 	T: Sub<Output = T> + Default + Copy,
 {
+	#[inline]
 	fn sub_assign(&mut self, rhs: Self) {
 		*self = *self - rhs;
 	}
@@ -147,6 +168,7 @@ where
 {
 	type Output = Self;
 
+	#[inline]
 	fn sub(self, rhs: T) -> Self::Output {
 		Self {
 			vals: self.vals.map(|e| e - rhs),
@@ -159,34 +181,37 @@ impl<T, const DIMS: usize> SubAssign<T> for Vector<T, DIMS>
 where
 	T: Sub<Output = T> + Default + Copy,
 {
+	#[inline]
 	fn sub_assign(&mut self, rhs: T) {
 		*self = *self - rhs;
 	}
 }
 
-// impl<T, const DIMS: usize> Mul for Vector<T, DIMS>
-// where
-// 	T: Mul<Output = T> + Default + Copy,
-// {
-// 	type Output = Self;
+impl<T, const DIMS: usize> Mul for Vector<T, DIMS>
+where
+	T: Mul<Output = T> + Default + Copy,
+{
+	type Output = Self;
 
-// 	fn mul(self, rhs: Self) -> Self::Output {
-// 		let mut temp = [Default::default(); DIMS];
-// 		for (i, e) in temp.iter_mut().enumerate() {
-// 			*e = self.vals[i] * rhs.vals[i];
-// 		}
-// 		Self { vals: temp }
-// 	}
-// }
+	#[inline]
+	fn mul(self, rhs: Self) -> Self::Output {
+		let mut temp = [Default::default(); DIMS];
+		for (i, e) in temp.iter_mut().enumerate() {
+			*e = self.vals[i] * rhs.vals[i];
+		}
+		Self { vals: temp }
+	}
+}
 
-// impl<T, const DIMS: usize> MulAssign for Vector<T, DIMS>
-// where
-// 	T: Mul<Output = T> + Default + Copy,
-// {
-// 	fn mul_assign(&mut self, rhs: Self) {
-// 		*self = *self * rhs;
-// 	}
-// }
+impl<T, const DIMS: usize> MulAssign for Vector<T, DIMS>
+where
+	T: Mul<Output = T> + Default + Copy,
+{
+	#[inline]
+	fn mul_assign(&mut self, rhs: Self) {
+		*self = *self * rhs;
+	}
+}
 
 // MulT Impl
 impl<T, const DIMS: usize> Mul<T> for Vector<T, DIMS>
@@ -195,6 +220,7 @@ where
 {
 	type Output = Self;
 
+	#[inline]
 	fn mul(self, rhs: T) -> Self::Output {
 		Self {
 			vals: self.vals.map(|e| e * rhs),
@@ -207,34 +233,37 @@ impl<T, const DIMS: usize> MulAssign<T> for Vector<T, DIMS>
 where
 	T: Mul<Output = T> + Default + Copy,
 {
+	#[inline]
 	fn mul_assign(&mut self, rhs: T) {
 		*self = *self * rhs;
 	}
 }
 
-// impl<T, const DIMS: usize> Div for Vector<T, DIMS>
-// where
-// 	T: Div<Output = T> + Default + Copy,
-// {
-// 	type Output = Self;
+impl<T, const DIMS: usize> Div for Vector<T, DIMS>
+where
+	T: Div<Output = T> + Default + Copy,
+{
+	type Output = Self;
 
-// 	fn div(self, rhs: Self) -> Self::Output {
-// 		let mut temp = [Default::default(); DIMS];
-// 		for (i, e) in temp.iter_mut().enumerate() {
-// 			*e = self.vals[i] / rhs.vals[i];
-// 		}
-// 		Self { vals: temp }
-// 	}
-// }
+	#[inline]
+	fn div(self, rhs: Self) -> Self::Output {
+		let mut temp = [Default::default(); DIMS];
+		for (i, e) in temp.iter_mut().enumerate() {
+			*e = self.vals[i] / rhs.vals[i];
+		}
+		Self { vals: temp }
+	}
+}
 
-// impl<T, const DIMS: usize> DivAssign for Vector<T, DIMS>
-// where
-// 	T: Div<Output = T> + Default + Copy,
-// {
-// 	fn div_assign(&mut self, rhs: Self) {
-// 		*self = *self / rhs;
-// 	}
-// }
+impl<T, const DIMS: usize> DivAssign for Vector<T, DIMS>
+where
+	T: Div<Output = T> + Default + Copy,
+{
+	#[inline]
+	fn div_assign(&mut self, rhs: Self) {
+		*self = *self / rhs;
+	}
+}
 
 // DivT Impl
 impl<T, const DIMS: usize> Div<T> for Vector<T, DIMS>
@@ -243,6 +272,7 @@ where
 {
 	type Output = Self;
 
+	#[inline]
 	fn div(self, rhs: T) -> Self::Output {
 		Self {
 			vals: self.vals.map(|e| e / rhs),
@@ -255,6 +285,7 @@ impl<T, const DIMS: usize> DivAssign<T> for Vector<T, DIMS>
 where
 	T: Div<Output = T> + Default + Copy,
 {
+	#[inline]
 	fn div_assign(&mut self, rhs: T) {
 		*self = *self / rhs;
 	}
@@ -267,6 +298,7 @@ where
 {
 	type Output = Self;
 
+	#[inline]
 	fn neg(self) -> Self::Output {
 		let mut temp = self.vals;
 		for (i, e) in temp.iter_mut().enumerate() {
@@ -283,6 +315,7 @@ where
 {
 	type Output = Self;
 
+	#[inline]
 	fn not(self) -> Self::Output {
 		let mut temp = self.vals;
 		for (i, e) in temp.iter_mut().enumerate() {
@@ -380,26 +413,26 @@ mod tests {
 		assert_eq!(expected1, vec1_3);
 	}
 
-	// #[test]
-	// fn mul() {
-	// 	let vec1_1: VUsizeN = [1, 1, 1].into();
-	// 	let vec1_2: VUsizeN = [2, 2, 2].into();
-	// 	let expected1: VUsizeN = [2, 2, 2].into();
+	#[test]
+	fn mul() {
+		let vec1_1: Vec3i32 = [1, 1, 1].into();
+		let vec1_2: Vec3i32 = [2, 2, 2].into();
+		let expected1: Vec3i32 = [2, 2, 2].into();
 
-	// 	assert_eq!(expected1, vec1_1 * vec1_2);
-	// }
+		assert_eq!(expected1, vec1_1 * vec1_2);
+	}
 
-	// #[test]
-	// fn mul_assign() {
-	// 	let vec1_1: VUsizeN = [1, 1, 1].into();
-	// 	let vec1_2: VUsizeN = [2, 2, 2].into();
-	// 	let expected1: VUsizeN = [2, 2, 2].into();
+	#[test]
+	fn mul_assign() {
+		let vec1_1: Vec3i32 = [1, 1, 1].into();
+		let vec1_2: Vec3i32 = [2, 2, 2].into();
+		let expected1: Vec3i32 = [2, 2, 2].into();
 
-	// 	let mut vec1_3 = vec1_1;
-	// 	vec1_3 *= vec1_2;
+		let mut vec1_3 = vec1_1;
+		vec1_3 *= vec1_2;
 
-	// 	assert_eq!(expected1, vec1_3);
-	// }
+		assert_eq!(expected1, vec1_3);
+	}
 
 	#[test]
 	fn mul_t() {
@@ -420,26 +453,26 @@ mod tests {
 		assert_eq!(expected1, vec1_3);
 	}
 
-	// #[test]
-	// fn div() {
-	// 	let vec1_1: VUsizeN = [2, 2, 2].into();
-	// 	let vec1_2: VUsizeN = [2, 2, 2].into();
-	// 	let expected1: VUsizeN = [1, 1, 1].into();
+	#[test]
+	fn div() {
+		let vec1_1: Vec3i32 = [2, 2, 2].into();
+		let vec1_2: Vec3i32 = [2, 2, 2].into();
+		let expected1: Vec3i32 = [1, 1, 1].into();
 
-	// 	assert_eq!(expected1, vec1_1 / vec1_2);
-	// }
+		assert_eq!(expected1, vec1_1 / vec1_2);
+	}
 
-	// #[test]
-	// fn div_assign() {
-	// 	let vec1_1: VUsizeN = [2, 2, 2].into();
-	// 	let vec1_2: VUsizeN = [2, 2, 2].into();
-	// 	let expected1: VUsizeN = [1, 1, 1].into();
+	#[test]
+	fn div_assign() {
+		let vec1_1: Vec3i32 = [2, 2, 2].into();
+		let vec1_2: Vec3i32 = [2, 2, 2].into();
+		let expected1: Vec3i32 = [1, 1, 1].into();
 
-	// 	let mut vec1_3 = vec1_1;
-	// 	vec1_3 /= vec1_2;
+		let mut vec1_3 = vec1_1;
+		vec1_3 /= vec1_2;
 
-	// 	assert_eq!(expected1, vec1_3);
-	// }
+		assert_eq!(expected1, vec1_3);
+	}
 
 	#[test]
 	fn div_t() {
@@ -520,7 +553,25 @@ mod tests {
 		let expected1: Vector<f64, 3> = [0.0, 0.0, 3.0].into();
 		assert_eq!(expected1.length(), 3.0);
 
-		let expected2: Vector<f32, 3> = [0.0, 0.0, 3.0].into();
+		let expected2: Vector<f32, 3> = [2.0, 2.0, 1.0].into();
 		assert_eq!(expected2.length(), 3.0);
+	}
+
+	#[test]
+	fn normalise() {
+		let expected1: Vector<f64, 3> = [0.0, 0.0, 3.0].into();
+		assert_eq!(expected1.normalise().length(), 1.0);
+
+		let expected2: Vector<f32, 3> = [3.0, 4.0, 5.0].into();
+		assert_eq!(expected2.normalise().length(), 1.0);
+	}
+
+	#[test]
+	fn reciprocal() {
+		let expected1: Vector<f64, 3> = [2.0, 2.0, 2.0].into();
+		assert_eq!(expected1.reciprocal().to_array(), [0.5, 0.5, 0.5]);
+
+		let expected2: Vector<f32, 3> = [2.0, 4.0, 8.0].into();
+		assert_eq!(expected2.reciprocal().to_array(), [0.5, 0.25, 0.125]);
 	}
 }

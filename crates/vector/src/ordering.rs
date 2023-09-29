@@ -9,6 +9,7 @@ impl<T, const DIMS: usize> PartialEq for Vector<T, DIMS>
 where
 	T: PartialEq,
 {
+	#[inline]
 	fn eq(&self, other: &Self) -> bool {
 		self.vals == other.vals
 	}
@@ -20,6 +21,7 @@ impl<T, const DIMS: usize> PartialOrd for Vector<T, DIMS>
 where
 	T: Add<Output = T> + Mul<Output = T> + Default + PartialOrd + Copy,
 {
+	#[inline]
 	fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
 		self.length_squared().partial_cmp(&other.length_squared())
 	}
@@ -29,6 +31,7 @@ impl<T, const DIMS: usize> Ord for Vector<T, DIMS>
 where
 	T: Add<Output = T> + Mul<Output = T> + Default + Ord + Copy,
 {
+	#[inline]
 	fn cmp(&self, other: &Self) -> std::cmp::Ordering {
 		self.length_squared().cmp(&other.length_squared())
 	}

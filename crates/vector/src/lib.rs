@@ -21,17 +21,32 @@ pub struct Vector<T, const DIMS: usize> {
 
 impl<T, const DIMS: usize> Vector<T, DIMS> {
 	/// Creates a new Vector<T,DIMS> from an Array [T;DIMS]
+	#[inline]
 	pub fn from_array(arr: [T; DIMS]) -> Self {
 		arr.into()
 	}
+
+	/// Returns an Array [T;DIMS] from the interal representation
+	#[inline]
+	pub fn to_array(self) -> [T; DIMS] {
+		self.vals
+	}
+
 	/// Returns the numer of dimensions of the Vector
 	// Used len() to keep consistent with other Rust containers
+	#[inline]
 	pub fn len(&self) -> usize {
 		DIMS
 	}
 	/// Returns true if the Vector is 0 dimensional
+	#[inline]
 	pub fn is_empty(&self) -> bool {
 		DIMS == 0
+	}
+
+	pub fn thing(&self) -> i32 {
+		let a = 10;
+		a
 	}
 }
 
@@ -41,13 +56,19 @@ where
 	T: Default,
 {
 	/// Create a new Vector
+	#[inline]
 	pub fn new() -> Self {
 		Self {
-			vals: unsafe {
-				std::mem::MaybeUninit::<[T; DIMS]>::uninit()
-					.assume_init()
-					.map(|_| Default::default())
-			},
+			vals: Self::new_arr(),
+		}
+	}
+
+	#[inline]
+	fn new_arr() -> [T; DIMS] {
+		unsafe {
+			std::mem::MaybeUninit::<[T; DIMS]>::uninit()
+				.assume_init()
+				.map(|_| Default::default())
 		}
 	}
 }
@@ -56,12 +77,14 @@ impl<T, const DIMS: usize> Default for Vector<T, DIMS>
 where
 	T: Default,
 {
+	#[inline]
 	fn default() -> Self {
 		Self::new()
 	}
 }
 
 impl<T, const DIMS: usize> From<[T; DIMS]> for Vector<T, DIMS> {
+	#[inline]
 	fn from(value: [T; DIMS]) -> Self {
 		Self { vals: value }
 	}
@@ -71,6 +94,7 @@ impl<T, const DIMS: usize> Clone for Vector<T, DIMS>
 where
 	T: Clone,
 {
+	#[inline]
 	fn clone(&self) -> Self {
 		Self {
 			vals: self.vals.clone(),
@@ -87,11 +111,11 @@ mod tests {
 	#[test]
 	fn new() {
 		let i1: Vector<i32, 64> = Vector::new();
-		let i2 = Vector::from_array([Default::default();64]);
+		let i2 = Vector::from_array([Default::default(); 64]);
 		assert_eq!(i1, i2);
 
 		let f1: Vector<f64, 64> = Vector::new();
-		let f2 = Vector::from_array([Default::default();64]);
+		let f2 = Vector::from_array([Default::default(); 64]);
 		assert_eq!(f1, f2);
 	}
 

@@ -6,11 +6,13 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+traits = { path="../traits" }
 vector = { path = "../vector", optional = true}
+num-traits = {workspace = true}
 
 [features]
 default = ["vector"]
 vector = ["dep:vector"]
 
 [dev-dependencies]
-
+glam = "*"

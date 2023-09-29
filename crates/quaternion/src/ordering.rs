@@ -1,3 +1,5 @@
+//! This module containts implementations for ordering Quaternions
+
 use super::Quaternion;
 
 impl<T> PartialEq for Quaternion<T>
