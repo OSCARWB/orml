@@ -6,15 +6,17 @@
 //! A library full of maths, including such delights as:
 //! - fractions
 //! - vectors
+//! - quaternions
+//! - easy big floats
 //! - and many more to come
 
-#[cfg(feature = "vector")]
-pub use ::vector::Vector;
+//#[cfg(feature = "vector")]
+pub use vector;
 
-#[cfg(feature = "traits")]
+//#[cfg(feature = "traits")]
 pub use traits;
 
 pub mod fraction;
 
-#[cfg(feature = "quaternion")]
-pub use ::quaternion;
+//#[cfg(feature = "quaternion")]
+pub use quaternion;

@@ -84,52 +84,85 @@ where
 	}
 }
 
-// Add Impl
-impl<T, const DIMS: usize> Add for Vector<T, DIMS>
-where
-	T: Default,
-	for<'a> &'a T: Add<&'a T, Output = T>,
-{
-	type Output = Self;
+macro_rules! impl_op {
+	($lhs:ty,$rhs:ty,$func:ident,$bound:ident) => {
+		impl<T, const DIMS: usize> $bound<$rhs> for $lhs
+		where
+			T: Default,
+			for<'a> &'a T: $bound<&'a T, Output = T>,
+		{
+			type Output = Vector<T, DIMS>;
 
-	#[inline]
-	fn add(self, rhs: Self) -> Self::Output {
-		let mut temp = Self::new_arr();
-		for (i, e) in temp.iter_mut().enumerate() {
-			*e = &self.vals[i] + &rhs.vals[i];
+			#[inline]
+			fn $func(self, rhs: $rhs) -> Self::Output {
+				let mut temp = Vector::new_arr();
+				for (i, e) in temp.iter_mut().enumerate() {
+					*e = $bound::$func(&self.vals[i], &rhs.vals[i]);
+				}
+				
+				Self::Output { vals: temp }
+			}
 		}
-
-		Self { vals: temp }
-	}
+	};
 }
+
+macro_rules! impl_op_vers {
+	($tt:ty,$func:ident,$bound:ident) => {
+		impl_op!($tt, $tt, $func, $bound);
+		impl_op!($tt, &$tt, $func, $bound);
+		impl_op!(&$tt, &$tt, $func, $bound);
+		impl_op!(&$tt, $tt, $func, $bound);
+	};
+	($lhs:ty,$rhs:ty,$func:ident,$bound:ident) => {
+		impl_op!($lhs, $rhs, $func, $bound);
+		impl_op!($lhs, &$rhs, $func, $bound);
+		impl_op!(&$lhs, &$rhs, $func, $bound);
+		impl_op!(&$lhs, $rhs, $func, $bound);
+	};
+}
+
+macro_rules! impl_op_assign {
+	($lhs:ty,$func:ident,$bound:ident,$func2:ident,$bound2:ident) => {
+		impl<T, const DIMS: usize> $bound for $lhs
+		where
+			T: Default + Clone,
+			for<'a> &'a T: $bound2<&'a T, Output = T>,
+		{
+			#[inline]
+			fn $func(&mut self, rhs: Self) {
+				*self = self.clone().$func2(rhs);
+			}
+		}
+	};
+}
+
+macro_rules! impl_op_t {
+	($lhs:ty,$func:ident,$bound:ident) => {
+		impl<T, const DIMS: usize> $bound<T> for $lhs
+		where
+			T: Default,
+			for<'a> &'a T: $bound<&'a T, Output = T>,
+		{
+			type Output = Vector<T, DIMS>;
+
+			#[inline]
+			fn $func(self, rhs: T) -> Self::Output {
+				Self {
+					vals: self.vals.map(|e| $bound::$func(&e,&rhs)),
+				}
+			}
+		}
+	};
+}
+
+impl_op_vers!(Vector<T, DIMS>,add,Add);
 
 // AddAssign Impl
-impl<T, const DIMS: usize> AddAssign for Vector<T, DIMS>
-where
-	T: Default + Clone,
-	for<'a> &'a T: Add<&'a T, Output = T>,
-{
-	#[inline]
-	fn add_assign(&mut self, rhs: Self) {
-		*self = self.clone() + rhs;
-	}
-}
+impl_op_assign!(Vector<T, DIMS>,add_assign,AddAssign,add,Add);
 
 // AddT Impl
-impl<T, const DIMS: usize> Add<T> for Vector<T, DIMS>
-where
-	T: Default,
-	for<'a> &'a T: Add<&'a T, Output = T>,
-{
-	type Output = Self;
+impl_op_t!(Vector<T, DIMS>,add,Add);
 
-	#[inline]
-	fn add(self, rhs: T) -> Self::Output {
-		Self {
-			vals: self.vals.map(|e| &e + &rhs),
-		}
-	}
-}
 
 // AddAssignT Impl
 impl<T, const DIMS: usize> AddAssign<T> for Vector<T, DIMS>
@@ -144,51 +177,13 @@ where
 }
 
 // Sub Impl
-impl<T, const DIMS: usize> Sub for Vector<T, DIMS>
-where
-	T: Default,
-	for<'a> &'a T: Sub<&'a T, Output = T>,
-{
-	type Output = Self;
-
-	#[inline]
-	fn sub(self, rhs: Self) -> Self::Output {
-		let mut temp = Self::new_arr();
-		for (i, e) in temp.iter_mut().enumerate() {
-			*e = &self.vals[i] - &rhs.vals[i];
-		}
-
-		Self { vals: temp }
-	}
-}
+impl_op_vers!(Vector<T, DIMS>,sub,Sub);
 
 // SubAssign Impl
-impl<T, const DIMS: usize> SubAssign for Vector<T, DIMS>
-where
-	T: Default + Clone,
-	for<'a> &'a T: Sub<&'a T, Output = T>,
-{
-	#[inline]
-	fn sub_assign(&mut self, rhs: Self) {
-		*self = self.clone() - rhs;
-	}
-}
+impl_op_assign!(Vector<T, DIMS>,sub_assign,SubAssign,sub,Sub);
 
 // SubT Impl
-impl<T, const DIMS: usize> Sub<T> for Vector<T, DIMS>
-where
-	T: Default,
-	for<'a> &'a T: Sub<&'a T, Output = T>,
-{
-	type Output = Self;
-
-	#[inline]
-	fn sub(self, rhs: T) -> Self::Output {
-		Self {
-			vals: self.vals.map(|e| &e - &rhs),
-		}
-	}
-}
+impl_op_t!(Vector<T, DIMS>,sub,Sub);
 
 // SubAssignT Impl
 impl<T, const DIMS: usize> SubAssign<T> for Vector<T, DIMS>
@@ -202,50 +197,14 @@ where
 	}
 }
 
-impl<T, const DIMS: usize> Mul for Vector<T, DIMS>
-where
-	T: Default,
-	for<'a> &'a T: Mul<&'a T, Output = T>,
-{
-	type Output = Self;
+// Mul impl
+impl_op_vers!(Vector<T, DIMS>,mul,Mul);
 
-	#[inline]
-	fn mul(self, rhs: Self) -> Self::Output {
-		let mut temp = Self::new_arr();
-		for (i, e) in temp.iter_mut().enumerate() {
-			*e = &self.vals[i] * &rhs.vals[i];
-		}
-
-		Self { vals: temp }
-	}
-}
-
-impl<T, const DIMS: usize> MulAssign for Vector<T, DIMS>
-where
-	T: Default + Clone,
-	for<'a> &'a T: Mul<&'a T, Output = T>,
-{
-	#[inline]
-	fn mul_assign(&mut self, rhs: Self) {
-		*self = self.clone() * rhs;
-	}
-}
+// MulAssign impl
+impl_op_assign!(Vector<T, DIMS>,mul_assign,MulAssign,mul,Mul);
 
 // MulT Impl
-impl<T, const DIMS: usize> Mul<T> for Vector<T, DIMS>
-where
-	T: Default,
-	for<'a> &'a T: Mul<&'a T, Output = T>,
-{
-	type Output = Self;
-
-	#[inline]
-	fn mul(self, rhs: T) -> Self::Output {
-		Self {
-			vals: self.vals.map(|e| &e * &rhs),
-		}
-	}
-}
+impl_op_t!(Vector<T, DIMS>,mul,Mul);
 
 // MulAssignT Impl
 impl<T, const DIMS: usize> MulAssign<T> for Vector<T, DIMS>
@@ -259,50 +218,15 @@ where
 	}
 }
 
-impl<T, const DIMS: usize> Div for Vector<T, DIMS>
-where
-	T: Default,
-	for<'a> &'a T: Div<&'a T, Output = T>,
-{
-	type Output = Self;
+// Div Impl
+impl_op_vers!(Vector<T, DIMS>,div,Div);
 
-	#[inline]
-	fn div(self, rhs: Self) -> Self::Output {
-		let mut temp = Self::new_arr();
-		for (i, e) in temp.iter_mut().enumerate() {
-			*e = &self.vals[i] / &rhs.vals[i];
-		}
+// DivAssign Impl
+impl_op_assign!(Vector<T, DIMS>,div_assign,DivAssign,div,Div);
 
-		Self { vals: temp }
-	}
-}
-
-impl<T, const DIMS: usize> DivAssign for Vector<T, DIMS>
-where
-	T: Default + Clone,
-	for<'a> &'a T: Div<&'a T, Output = T>,
-{
-	#[inline]
-	fn div_assign(&mut self, rhs: Self) {
-		*self = self.clone() / rhs;
-	}
-}
 
 // DivT Impl
-impl<T, const DIMS: usize> Div<T> for Vector<T, DIMS>
-where
-	T: Default,
-	for<'a> &'a T: Div<&'a T, Output = T>,
-{
-	type Output = Self;
-
-	#[inline]
-	fn div(self, rhs: T) -> Self::Output {
-		Self {
-			vals: self.vals.map(|e| &e / &rhs),
-		}
-	}
-}
+impl_op_t!(Vector<T, DIMS>,div,Div);
 
 // DivAssignT Impl
 impl<T, const DIMS: usize> DivAssign<T> for Vector<T, DIMS>

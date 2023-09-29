@@ -22,7 +22,7 @@ lazy_static! {
 }
 
 #[derive(Debug)]
-struct EasyBigFloat {
+pub struct EasyBigFloat {
 	val: BigFloat,
 }
 
@@ -131,22 +131,22 @@ impl Clone for EasyBigFloat {
 // DISPLAY
 impl Display for EasyBigFloat {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		Display::fmt(&self, f)
+		Display::fmt(&self.val, f)
 	}
 }
 impl Binary for EasyBigFloat {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		Binary::fmt(&self, f)
+		Binary::fmt(&self.val, f)
 	}
 }
 impl Octal for EasyBigFloat {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		Octal::fmt(&self, f)
+		Octal::fmt(&self.val, f)
 	}
 }
 impl UpperHex for EasyBigFloat {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		UpperHex::fmt(&self, f)
+		UpperHex::fmt(&self.val, f)
 	}
 }
 
@@ -457,6 +457,8 @@ impl SquareRoot for EasyBigFloat {
 
 #[cfg(test)]
 mod tests {
+	use vector::Vector;
+
 	use super::*;
 
 	#[test]
@@ -466,5 +468,28 @@ mod tests {
 		let c = EasyBigFloat::from_f64(11.0);
 
 		assert_eq!(c, a + b);
+	}
+
+	#[test]
+	fn test_vec() {
+		let a = Vector::from_array([
+			EasyBigFloat::from_f64(10.0),
+			EasyBigFloat::from_f64(10.0),
+			EasyBigFloat::from_f64(10.0),
+		]);
+		let b = Vector::from_array([
+			EasyBigFloat::from_f64(20.0),
+			EasyBigFloat::from_f64(20.0),
+			EasyBigFloat::from_f64(20.0),
+		]);
+
+		let c = Vector::from_array([
+			EasyBigFloat::from_f64(30.0),
+			EasyBigFloat::from_f64(30.0),
+			EasyBigFloat::from_f64(30.0),
+		]);
+
+		assert_eq!(a, a);
+		assert_eq!(c, a * b);
 	}
 }

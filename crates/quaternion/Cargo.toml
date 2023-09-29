@@ -12,7 +12,7 @@ num-traits = {workspace = true}
 
 [features]
 default = ["vector"]
-vector = ["dep:vector"]
+#vector = ["dep:vector"]
 
 [dev-dependencies]
 glam = "*"

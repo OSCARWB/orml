@@ -116,6 +116,7 @@ dependencies = [
 name = "orml"
 version = "0.1.0"
 dependencies = [
+ "easy_big_float",
  "quaternion",
  "traits",
  "vector",

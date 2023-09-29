@@ -6,6 +6,8 @@
 //! This module contains a generic Vector (Vector<T, const DIMS: usize>) that can be any type or size
 //! and type defs of commonly used vector i.e Vec3f64
 
+use std::fmt::Debug;
+
 pub mod arithmetic;
 pub mod index;
 pub mod iter;
@@ -65,17 +67,32 @@ where
 
 	#[inline]
 	fn new_arr() -> [T; DIMS] {
-		unsafe {
-			std::mem::MaybeUninit::<[T; DIMS]>::uninit()
-				.assume_init()
-				.map(|_| Default::default())
+		// println!("jere");
+		// let mut arr = unsafe {
+		// 	std::mem::MaybeUninit::<[T; DIMS]>::uninit()
+		// 		.assume_init()
+		// };
+
+		// for i in 0..DIMS {
+		// 	println!("jere2");
+		// 	arr[i] = Default::default();
+		// 	println!("jere3");
+		// }
+
+		// arr
+
+		let mut vec = Vec::with_capacity(DIMS);
+		for _ in 0..DIMS {
+			vec.push(Default::default());
 		}
+
+		unsafe { vec.try_into().unwrap_unchecked() }
 	}
 }
 
 impl<T, const DIMS: usize> Default for Vector<T, DIMS>
 where
-	T: Default,
+	T: Default + Debug,
 {
 	#[inline]
 	fn default() -> Self {
