@@ -20,3 +20,5 @@ pub mod fraction;
 
 //#[cfg(feature = "quaternion")]
 pub use quaternion;
+
+pub use easy_big_float;
