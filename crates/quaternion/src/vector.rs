@@ -3,6 +3,7 @@
 use std::ops::{Add, Mul, Sub};
 
 use crate::Quaternion;
+use num_traits::One;
 use vector::Vector;
 
 impl<T> From<Vector<T, 4>> for Quaternion<T>
@@ -27,7 +28,9 @@ where
 
 impl<T> Mul<Vector<T, 3>> for Quaternion<T>
 where
-	T: Add<Output = T> + Mul<Output = T> + Sub<Output = T> + Default + Copy,
+	T: Add<Output = T> + Mul<Output = T> + Sub<Output = T> + Default + One,
+	for<'a> &'a T: Mul<&'a T, Output = T>,
+	for<'a> &'a T: Add<&'a T, Output = T>,
 {
 	type Output = Vector<T, 3>;
 
@@ -35,7 +38,10 @@ where
 		let w = self.w;
 		let b = Vector::from_array([self.x, self.y, self.z]);
 		let b2 = b.length_squared();
-		rhs * (w * w - b2) + (b * (rhs.dot(b) + (rhs.dot(b)))) + (b.cross(rhs) * (w + w))
+		let rb = rhs.dot(&b);
+		let two = T::one() + T::one();
+		let br = b.cross(&rhs);
+		rhs * (&w * &w - b2) + (b * (rb * two)) + (br * (&w + &w))
 	}
 }
 

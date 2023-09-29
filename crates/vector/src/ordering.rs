@@ -19,7 +19,8 @@ impl<T, const DIMS: usize> Eq for Vector<T, DIMS> where T: Eq {}
 
 impl<T, const DIMS: usize> PartialOrd for Vector<T, DIMS>
 where
-	T: Add<Output = T> + Mul<Output = T> + Default + PartialOrd + Copy,
+	T: Add<Output = T> + Mul<Output = T> + Default + PartialOrd,
+	for<'a> &'a T: Mul<&'a T, Output = T>,
 {
 	#[inline]
 	fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
@@ -29,7 +30,8 @@ where
 
 impl<T, const DIMS: usize> Ord for Vector<T, DIMS>
 where
-	T: Add<Output = T> + Mul<Output = T> + Default + Ord + Copy,
+	T: Add<Output = T> + Mul<Output = T> + Default + Ord,
+	for<'a> &'a T: Mul<&'a T, Output = T>,
 {
 	#[inline]
 	fn cmp(&self, other: &Self) -> std::cmp::Ordering {

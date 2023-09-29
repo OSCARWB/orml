@@ -8,7 +8,7 @@ use traits::fns::SquareRoot;
 
 impl<T> Quaternion<T>
 where
-	T:  Add<Output = T>,
+	T: Add<Output = T>,
 	for<'a> &'a T: Mul<&'a T, Output = T>,
 {
 	/// The dot product between 2 Quaternion of the same dimension. Also know as the scalar product
@@ -54,8 +54,8 @@ where
 
 impl<T> Quaternion<T>
 where
-T: Add<Output = T> + SquareRoot + One + Div<Output = T>,
-for<'a> &'a T: Mul<&'a T, Output = T>,
+	T: Add<Output = T> + SquareRoot + One + Div<Output = T>,
+	for<'a> &'a T: Mul<&'a T, Output = T>,
 {
 	/// Returns the Quaternion normalised to length 1
 	pub fn normalise(self) -> Self {
@@ -153,7 +153,7 @@ where
 	}
 }
 
-impl<'b,T> Mul<Quaternion<T>> for &'b Quaternion<T>
+impl<'b, T> Mul<Quaternion<T>> for &'b Quaternion<T>
 where
 	T: Add<Output = T> + Sub<Output = T>,
 	for<'a> &'a T: Mul<&'a T, Output = T>,
@@ -172,7 +172,7 @@ where
 	}
 }
 
-impl<T> Mul<Quaternion<T>> for & mut Quaternion<T>
+impl<T> Mul<Quaternion<T>> for &mut Quaternion<T>
 where
 	T: Add<Output = T> + Sub<Output = T>,
 	for<'a> &'a T: Mul<&'a T, Output = T>,
@@ -203,7 +203,7 @@ where
 
 impl<T> Mul<T> for Quaternion<T>
 where
-	for<'a> &'a T: Mul<&'a T, Output = T>
+	for<'a> &'a T: Mul<&'a T, Output = T>,
 {
 	type Output = Self;
 
@@ -219,7 +219,7 @@ where
 
 impl<T> Div<T> for Quaternion<T>
 where
-	for<'a> &'a T: Div<&'a T, Output = T>
+	for<'a> &'a T: Div<&'a T, Output = T>,
 {
 	type Output = Self;
 
