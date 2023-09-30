@@ -12,7 +12,7 @@ use astro_float::{BigFloat, Consts, RoundingMode};
 
 use lazy_static::lazy_static;
 use num_traits::{Num, One, Zero};
-use orml_traits::{
+pub use orml_traits::{
 	fns::{pow::Pow, trig::Acos, SquareRoot},
 	impl_all_trig,
 };
