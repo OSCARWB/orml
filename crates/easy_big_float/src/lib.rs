@@ -51,19 +51,19 @@ impl Default for EasyBigFloat {
 
 // DEREF
 //
-impl Deref for EasyBigFloat {
-	type Target = BigFloat;
+// impl Deref for EasyBigFloat {
+// 	type Target = BigFloat;
 
-	fn deref(&self) -> &Self::Target {
-		&self.val
-	}
-}
+// 	fn deref(&self) -> &Self::Target {
+// 		&self.val
+// 	}
+// }
 
-impl DerefMut for EasyBigFloat {
-	fn deref_mut(&mut self) -> &mut Self::Target {
-		&mut self.val
-	}
-}
+// impl DerefMut for EasyBigFloat {
+// 	fn deref_mut(&mut self) -> &mut Self::Target {
+// 		&mut self.val
+// 	}
+// }
 
 // ADD
 //
@@ -466,7 +466,7 @@ impl Num for EasyBigFloat {
 impl SquareRoot for EasyBigFloat {
 	fn sqrt(&self) -> Self {
 		Self {
-			val: BigFloat::sqrt(self, P, RM),
+			val: BigFloat::sqrt(&self.val, P, RM),
 		}
 	}
 }
@@ -484,7 +484,7 @@ macro_rules! impl_trig {
 		impl $bound for EasyBigFloat {
 			fn $fn(&self) -> Self {
 				Self {
-					val: BigFloat::$fn(self, P, RM, &mut CC!()),
+					val: BigFloat::$fn(&self.val, P, RM, &mut CC!()),
 				}
 			}
 		}
@@ -498,7 +498,7 @@ fn atan2(y: &EasyBigFloat, x: &EasyBigFloat) -> EasyBigFloat {
 	let pi = EasyBigFloat {
 		val: CC!().pi(P, RM),
 	};
-	match (zero.cmp(y), zero.cmp(x)) {
+	match (zero.val.cmp(&y.val), zero.val.cmp(&x.val)) {
 		(Some(cy), Some(cx)) => {
 			if (cy, cx) == (0, 0) {
 				zero.clone()
@@ -530,13 +530,13 @@ impl Atan2 for EasyBigFloat {
 impl Pow for EasyBigFloat {
 	fn pow(self, n: &Self) -> Self {
 		Self {
-			val: BigFloat::pow(&self, n, P, RM, &mut CC!()),
+			val: BigFloat::pow(&self.val, &n.val, P, RM, &mut CC!()),
 		}
 	}
 
 	fn powi(self, n: usize) -> Self {
 		Self {
-			val: BigFloat::powi(&self, n, P, RM),
+			val: BigFloat::powi(&self.val, n, P, RM),
 		}
 	}
 }
