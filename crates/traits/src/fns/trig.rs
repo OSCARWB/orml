@@ -6,18 +6,18 @@ pub trait TrigFns:
 #[macro_export]
 macro_rules! impl_all_trig {
 	($impl_trig:ident) => {
-		impl_trig!(Acos,acos);
-		impl_trig!(Acosh,acosh);
-		impl_trig!(Asin,asin);
-		impl_trig!(Asinh,asinh);
-		impl_trig!(Atan,atan);
-		impl_trig!(Atanh,atanh);
-		impl_trig!(Cos,cos);
-		impl_trig!(Cosh,cosh);
-		impl_trig!(Sin,sin);
-		impl_trig!(Sinh,sinh);
-		impl_trig!(Tan,tan);
-		impl_trig!(Tanh,tanh);
+		impl_trig!(Acos, acos);
+		impl_trig!(Acosh, acosh);
+		impl_trig!(Asin, asin);
+		impl_trig!(Asinh, asinh);
+		impl_trig!(Atan, atan);
+		impl_trig!(Atanh, atanh);
+		impl_trig!(Cos, cos);
+		impl_trig!(Cosh, cosh);
+		impl_trig!(Sin, sin);
+		impl_trig!(Sinh, sinh);
+		impl_trig!(Tan, tan);
+		impl_trig!(Tanh, tanh);
 	};
 }
 
@@ -35,21 +35,20 @@ macro_rules! impl_trivial_trig {
 #[macro_export]
 macro_rules! impl_trivial_trig_all {
 	($tt:ty) => {
-		impl_trivial_trig!(Acos,acos,$tt);
-		impl_trivial_trig!(Acosh,acosh,$tt);
-		impl_trivial_trig!(Asin,asin,$tt);
-		impl_trivial_trig!(Asinh,asinh,$tt);
-		impl_trivial_trig!(Atan,atan,$tt);
-		impl_trivial_trig!(Atanh,atanh,$tt);
-		impl_trivial_trig!(Cos,cos,$tt);
-		impl_trivial_trig!(Cosh,cosh,$tt);
-		impl_trivial_trig!(Sin,sin,$tt);
-		impl_trivial_trig!(Sinh,sinh,$tt);
-		impl_trivial_trig!(Tan,tan,$tt);
-		impl_trivial_trig!(Tanh,tanh,$tt);
+		impl_trivial_trig!(Acos, acos, $tt);
+		impl_trivial_trig!(Acosh, acosh, $tt);
+		impl_trivial_trig!(Asin, asin, $tt);
+		impl_trivial_trig!(Asinh, asinh, $tt);
+		impl_trivial_trig!(Atan, atan, $tt);
+		impl_trivial_trig!(Atanh, atanh, $tt);
+		impl_trivial_trig!(Cos, cos, $tt);
+		impl_trivial_trig!(Cosh, cosh, $tt);
+		impl_trivial_trig!(Sin, sin, $tt);
+		impl_trivial_trig!(Sinh, sinh, $tt);
+		impl_trivial_trig!(Tan, tan, $tt);
+		impl_trivial_trig!(Tanh, tanh, $tt);
 	};
 }
-
 
 pub trait Acos {
 	fn acos(&self) -> Self;

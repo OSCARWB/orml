@@ -4,7 +4,7 @@ use std::ops::{Add, Mul, Sub};
 
 use crate::Quaternion;
 use num_traits::One;
-use vector::Vector;
+use orml_vector::Vector;
 
 impl<T> From<Vector<T, 4>> for Quaternion<T>
 where
@@ -47,9 +47,7 @@ where
 
 #[cfg(test)]
 mod tests {
-	use vector::Vector;
-
-	use crate::Quaternion;
+	use crate::{vector::Vector, Quaternion};
 
 	#[test]
 	fn mul_vec3_id() {

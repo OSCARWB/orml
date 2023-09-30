@@ -6,10 +6,14 @@
 //!
 //! This module contains a generic Quaternion that can be any type or size
 
+use std::ops::{Add, Mul};
+
+use num_traits::One;
+use orml_traits::fns::trig::{Cos, Sin};
 use orml_vector::Vector;
 
 pub mod arithmetic;
-#[cfg(feature = "vector")]
+//#[cfg(feature = "vector")]
 pub mod vector;
 
 pub mod ordering;
@@ -31,6 +35,7 @@ pub struct Quaternion<T> {
 
 impl<T> Quaternion<T> {
 	/// TODO: Documentation
+	#[inline]
 	pub fn zip(
 		self,
 		rhs: Self,
@@ -39,6 +44,7 @@ impl<T> Quaternion<T> {
 	}
 
 	/// Returns an Array [T;4] from the interal representation
+	#[inline]
 	pub fn to_array(self) -> [T; 4] {
 		self.into()
 	}
@@ -49,6 +55,7 @@ where
 	T: Copy,
 {
 	/// Creates a new Quaternion<T> from an Array [T;3]
+	#[inline]
 	pub fn from_array(arr: [T; 4]) -> Quaternion<T> {
 		arr.into()
 	}
@@ -58,6 +65,7 @@ impl<T> From<[T; 4]> for Quaternion<T>
 where
 	T: Copy,
 {
+	#[inline]
 	fn from(value: [T; 4]) -> Self {
 		Self {
 			x: value[0],
@@ -72,6 +80,7 @@ impl<T> From<(T, T, T, T)> for Quaternion<T>
 where
 	T:,
 {
+	#[inline]
 	fn from(value: (T, T, T, T)) -> Self {
 		Self {
 			x: value.0,
@@ -83,6 +92,7 @@ where
 }
 
 impl<T> From<Quaternion<T>> for [T; 4] {
+	#[inline]
 	fn from(value: Quaternion<T>) -> Self {
 		[value.x, value.y, value.z, value.w]
 	}
@@ -92,6 +102,7 @@ impl<T> Clone for Quaternion<T>
 where
 	T: Clone,
 {
+	#[inline]
 	fn clone(&self) -> Self {
 		Self {
 			x: self.x.clone(),
@@ -103,3 +114,23 @@ where
 }
 
 impl<T> Copy for Quaternion<T> where T: Copy {}
+
+impl<T> Quaternion<T>
+where
+	T: Sin + Cos + One + Add<Output = T> + Default + Clone,
+	for<'a> &'a T: Mul<Output = T>,
+{
+	#[inline]
+	pub fn from_axis_angle(axis: Vector<T, 3>, angle: T) -> Self {
+		let a5 = angle * (T::one() + T::one());
+		let s = a5.sin();
+		let c = a5.cos();
+		let v = axis * s;
+		Self {
+			x: v[0].clone(),
+			y: v[1].clone(),
+			z: v[2].clone(),
+			w: c,
+		}
+	}
+}

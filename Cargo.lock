@@ -112,6 +112,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "orml_double_double"
+version = "0.1.0"
+
+[[package]]
 name = "orml_easy_big_float"
 version = "0.1.0"
 dependencies = [

@@ -12,7 +12,10 @@ use astro_float::{BigFloat, Consts, RoundingMode};
 
 use lazy_static::lazy_static;
 use num_traits::{Num, One, Zero};
-use orml_traits::{fns::{trig::Acos, SquareRoot}, impl_all_trig};
+use orml_traits::{
+	fns::{trig::Acos, SquareRoot},
+	impl_all_trig,
+};
 
 const P: usize = 1024;
 const RM: RoundingMode = RoundingMode::None;
@@ -476,7 +479,6 @@ macro_rules! CC {
 	};
 }
 
-
 macro_rules! impl_trig {
 	($bound:ident,$fn:ident) => {
 		impl $bound for EasyBigFloat {
@@ -526,6 +528,6 @@ mod tests {
 		]);
 
 		assert_eq!(a, a);
-		assert_eq!(c, a * b);
+		assert_eq!(c, a + b);
 	}
 }
