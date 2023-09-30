@@ -13,7 +13,7 @@ use astro_float::{BigFloat, Consts, RoundingMode};
 use lazy_static::lazy_static;
 use num_traits::{Num, One, Zero};
 use orml_traits::{
-	fns::{trig::Acos, SquareRoot},
+	fns::{pow::Pow, trig::Acos, SquareRoot},
 	impl_all_trig,
 };
 
@@ -524,6 +524,20 @@ fn atan2(y: &EasyBigFloat, x: &EasyBigFloat) -> EasyBigFloat {
 impl Atan2 for EasyBigFloat {
 	fn atan2(&self, other: &Self) -> Self {
 		atan2(other, self)
+	}
+}
+
+impl Pow for EasyBigFloat {
+	fn pow(self, n: &Self) -> Self {
+		Self {
+			val: BigFloat::pow(&self, n, P, RM, &mut CC!()),
+		}
+	}
+
+	fn powi(self, n: usize) -> Self {
+		Self {
+			val: BigFloat::powi(&self, n, P, RM),
+		}
 	}
 }
 
