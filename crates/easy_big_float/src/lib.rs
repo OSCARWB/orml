@@ -493,6 +493,40 @@ macro_rules! impl_trig {
 
 impl_all_trig!(impl_trig);
 
+fn atan2(y: &EasyBigFloat, x: &EasyBigFloat) -> EasyBigFloat {
+	let zero = EasyBigFloat::zero();
+	let pi = EasyBigFloat {
+		val: CC!().pi(P, RM),
+	};
+	match (zero.cmp(y), zero.cmp(x)) {
+		(Some(cy), Some(cx)) => {
+			if (cy, cx) == (0, 0) {
+				zero.clone()
+			} else {
+				let atanyx = y.div(x).atan();
+				if cx >= 0 {
+					atanyx
+				} else if cy >= 0 {
+					atanyx.add(pi)
+				} else if cy < 0 {
+					atanyx.sub(pi)
+				} else {
+					zero.clone()
+				}
+			}
+		}
+		(_, _) => EasyBigFloat {
+			val: astro_float::NAN,
+		},
+	}
+}
+
+impl Atan2 for EasyBigFloat {
+	fn atan2(&self, other: &Self) -> Self {
+		atan2(other, self)
+	}
+}
+
 #[cfg(test)]
 mod tests {
 	use orml_vector::Vector;
