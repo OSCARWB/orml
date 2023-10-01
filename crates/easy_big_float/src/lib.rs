@@ -516,26 +516,26 @@ fn atan2(y: &EasyBigFloat, x: &EasyBigFloat) -> EasyBigFloat {
 
 impl EasyBigFloat {
 	#[inline]
-	fn atan2(&self, other: &Self) -> Self {
+	pub fn atan2(&self, other: &Self) -> Self {
 		atan2(other, self)
 	}
 
 	#[inline]
-	fn pow(self, n: &Self) -> Self {
+	pub fn pow(self, n: &Self) -> Self {
 		Self {
 			val: BigFloat::pow(&self.val, &n.val, P, RM, &mut CC!()),
 		}
 	}
 
 	#[inline]
-	fn powi(self, n: usize) -> Self {
+	pub fn powi(self, n: usize) -> Self {
 		Self {
 			val: BigFloat::powi(&self.val, n, P, RM),
 		}
 	}
 
 	#[inline]
-	fn sqrt(&self) -> Self {
+	pub fn sqrt(&self) -> Self {
 		Self {
 			val: BigFloat::sqrt(&self.val, P, RM),
 		}
