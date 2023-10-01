@@ -417,7 +417,7 @@ impl<const P: usize> EasyBigFloat<P> {
 	impl_cc_fn!(tanh);
 	#[inline]
 	pub fn atan2(&self, other: &Self) -> Self {
-		atan2(other, self)
+		atan2(self, other)
 	}
 
 	impl_fn!(powi, usize);
