@@ -27,7 +27,7 @@ fn main() {
 		println!("{}", e);
 	}
 
-	let axis = Vector::from_array([
+	let _axis = Vector::from_array([
 		EasyBigFloat::<1024>::one(),
 		EasyBigFloat::<1024>::zero(),
 		EasyBigFloat::<1024>::zero(),
@@ -43,5 +43,5 @@ fn main() {
 		EasyBigFloat::<1024>::from_f64(1.0),
 	);
 
-	let z = q * a;
+	let _z = q * a;
 }

@@ -45,11 +45,6 @@ impl<T, const DIMS: usize> Vector<T, DIMS> {
 	pub fn is_empty(&self) -> bool {
 		DIMS == 0
 	}
-
-	pub fn thing(&self) -> i32 {
-		let a = 10;
-		a
-	}
 }
 
 #[allow(clippy::uninit_assumed_init)]
@@ -125,6 +120,7 @@ impl<T, const DIMS: usize> Display for Vector<T, DIMS>
 where
 	T: Display,
 {
+	#[inline]
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		write!(f, "[")?;
 		for e in &self.vals {

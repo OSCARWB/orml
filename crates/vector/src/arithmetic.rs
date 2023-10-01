@@ -57,6 +57,7 @@ where
 	T: Add<Output = T> + Mul<Output = T> + Default + SquareRoot + Div<Output = T> + One + Clone,
 	for<'a> &'a T: Mul<&'a T, Output = T>,
 {
+	#[inline]
 	/// Returns the vector normalised to length 1
 	pub fn normalise(self) -> Self {
 		let t = self.clone();

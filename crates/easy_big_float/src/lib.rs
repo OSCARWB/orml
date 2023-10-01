@@ -1,9 +1,6 @@
 use std::{
 	fmt::{Binary, Display, Octal, UpperHex},
-	ops::{
-		Add, AddAssign, Deref, DerefMut, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub,
-		SubAssign,
-	},
+	ops::{Add, AddAssign, Div, DivAssign, Mul, MulAssign, Neg, Rem, RemAssign, Sub, SubAssign},
 	str::FromStr,
 	sync::Mutex,
 };
@@ -30,20 +27,28 @@ pub struct EasyBigFloat<const P: usize> {
 }
 
 impl<const P: usize> EasyBigFloat<P> {
+	#[inline]
 	pub fn new() -> Self {
 		Self {
 			val: BigFloat::new(P),
 		}
 	}
-
+	#[inline]
 	pub fn from_f64(f: f64) -> Self {
 		Self {
 			val: BigFloat::from_f64(f, P),
 		}
 	}
+	#[inline]
+	pub fn from_f32(f: f32) -> Self {
+		Self {
+			val: BigFloat::from_f32(f, P),
+		}
+	}
 }
 
 impl<const P: usize> Default for EasyBigFloat<P> {
+	#[inline]
 	fn default() -> Self {
 		Self::new()
 	}
@@ -69,7 +74,7 @@ macro_rules! impl_arith {
 	($bound:ident,$fn:ident,$fn2:ident,$lhs:ty,$rhs:ty) => {
 		impl<const P: usize> $bound<$rhs> for $lhs {
 			type Output = EasyBigFloat<P>;
-
+			#[inline]
 			fn $fn(self, rhs: $rhs) -> Self::Output {
 				Self::Output {
 					val: self.val.$fn2(&rhs.val),
@@ -80,7 +85,7 @@ macro_rules! impl_arith {
 	($bound:ident,$fn:ident,$fn2:ident,$lhs:ty,$rhs:ty,$rm:ident) => {
 		impl<const P: usize> $bound<$rhs> for $lhs {
 			type Output = EasyBigFloat<P>;
-
+			#[inline]
 			fn $fn(self, rhs: $rhs) -> Self::Output {
 				Self::Output {
 					val: self.val.$fn2(&rhs.val, P, $rm),
@@ -93,6 +98,7 @@ macro_rules! impl_arith {
 macro_rules! impl_arith_assign {
 	($bound:ident,$fn:ident,$fn2:ident,$lhs:ty,$rhs:ty) => {
 		impl<const P: usize> $bound<$rhs> for $lhs {
+			#[inline]
 			fn $fn(&mut self, rhs: $rhs) {
 				self.val = self.val.$fn2(&rhs.val);
 			}
@@ -100,6 +106,7 @@ macro_rules! impl_arith_assign {
 	};
 	($bound:ident,$fn:ident,$fn2:ident,$lhs:ty,$rhs:ty,$p:ident,$rm:ident) => {
 		impl<const P: usize> $bound<$rhs> for $lhs {
+			#[inline]
 			fn $fn(&mut self, rhs: $rhs) {
 				self.val = self.val.$fn2(&rhs.val, $p, $rm);
 			}
@@ -146,6 +153,7 @@ impl_arith_assign!(
 // CLONE
 //
 impl<const P: usize> Clone for EasyBigFloat<P> {
+	#[inline]
 	fn clone(&self) -> Self {
 		Self {
 			val: self.val.clone(),
@@ -157,6 +165,7 @@ impl<const P: usize> Clone for EasyBigFloat<P> {
 macro_rules! impl_display {
 	($bound:ident) => {
 		impl<const P: usize> $bound for EasyBigFloat<P> {
+			#[inline]
 			fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 				$bound::fmt(&self.val, f)
 			}
@@ -219,7 +228,7 @@ impl_arith_assign!(
 //
 impl<const P: usize> Neg for &EasyBigFloat<P> {
 	type Output = EasyBigFloat<P>;
-
+	#[inline]
 	fn neg(self) -> Self::Output {
 		Self::Output {
 			val: self.val.clone().neg(),
@@ -229,7 +238,7 @@ impl<const P: usize> Neg for &EasyBigFloat<P> {
 
 impl<const P: usize> Neg for EasyBigFloat<P> {
 	type Output = EasyBigFloat<P>;
-
+	#[inline]
 	fn neg(self) -> Self::Output {
 		Self::Output {
 			val: self.val.neg(),
@@ -240,6 +249,7 @@ impl<const P: usize> Neg for EasyBigFloat<P> {
 // PARTIAL_EQ
 //
 impl<const P: usize> PartialEq for EasyBigFloat<P> {
+	#[inline]
 	fn eq(&self, other: &Self) -> bool {
 		self.val == other.val
 	}
@@ -250,6 +260,7 @@ impl<const P: usize> Eq for EasyBigFloat<P> {}
 // PARTIAL_ORD
 //
 impl<const P: usize> PartialOrd for EasyBigFloat<P> {
+	#[inline]
 	fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
 		self.val.partial_cmp(&other.val)
 	}
@@ -292,18 +303,20 @@ impl_arith_assign!(
 );
 
 impl<const P: usize> Zero for EasyBigFloat<P> {
+	#[inline]
 	fn zero() -> Self {
 		Self {
 			val: BigFloat::from_f64(0.0, P),
 		}
 	}
-
+	#[inline]
 	fn is_zero(&self) -> bool {
 		*self == EasyBigFloat::zero()
 	}
 }
 
 impl<const P: usize> One for EasyBigFloat<P> {
+	#[inline]
 	fn one() -> Self {
 		Self {
 			val: BigFloat::from_f64(1.0, P),
@@ -313,7 +326,7 @@ impl<const P: usize> One for EasyBigFloat<P> {
 
 impl<const P: usize> Num for EasyBigFloat<P> {
 	type FromStrRadixErr = ();
-
+	#[inline]
 	fn from_str_radix(str: &str, radix: u32) -> Result<Self, Self::FromStrRadixErr> {
 		if radix != 10 {
 			Ok(Self {
@@ -333,6 +346,7 @@ macro_rules! CC {
 	};
 }
 
+#[inline]
 fn atan2<const P: usize>(y: &EasyBigFloat<P>, x: &EasyBigFloat<P>) -> EasyBigFloat<P> {
 	let zero = EasyBigFloat::zero();
 	let pi = EasyBigFloat {
@@ -466,7 +480,17 @@ impl<const P: usize> SquareRoot for EasyBigFloat<P> {
 }
 
 impl<const P: usize> From<f64> for EasyBigFloat<P> {
+	#[inline]
 	fn from(value: f64) -> Self {
+		Self {
+			val: BigFloat::from(value),
+		}
+	}
+}
+
+impl<const P: usize> From<f32> for EasyBigFloat<P> {
+	#[inline]
+	fn from(value: f32) -> Self {
 		Self {
 			val: BigFloat::from(value),
 		}
