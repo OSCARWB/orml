@@ -66,9 +66,6 @@ impl Default for EasyBigFloat {
 // }
 
 macro_rules! impl_arith {
-	($bound:ident,$fn:ident,$fn2:ident,$lhs:ty,$p:ident,$rm:ident) => {
-		impl_arith!($bound, $fn, $fn2, $lhs, $lhs, $p, $rm);
-	};
 	($bound:ident,$fn:ident,$fn2:ident,$lhs:ty,$rhs:ty) => {
 		impl $bound<$rhs> for $lhs {
 			type Output = EasyBigFloat;
@@ -79,9 +76,6 @@ macro_rules! impl_arith {
 				}
 			}
 		}
-	};
-	($bound:ident,$fn:ident,$fn2:ident,$lhs:ty) => {
-		impl_arith!($bound, $fn, $fn2, $lhs, $lhs);
 	};
 	($bound:ident,$fn:ident,$fn2:ident,$lhs:ty,$rhs:ty,$p:ident,$rm:ident) => {
 		impl $bound<$rhs> for $lhs {
@@ -114,23 +108,23 @@ macro_rules! impl_arith_assign {
 }
 
 macro_rules! impl_arith_4 {
-	($bound:ident,$fn:ident,$fn2:ident,$tt:ty) => {
-		impl_arith!($bound, $fn, $fn2, $tt);
-		impl_arith!($bound, $fn, $fn2, &$tt);
-		impl_arith!($bound, $fn, $fn2, $tt, &$tt);
-		impl_arith!($bound, $fn, $fn2, &$tt, $tt);
+	($bound:ident,$fn:ident,$tt:ty) => {
+		impl_arith!($bound, $fn, $fn, $tt, $tt);
+		impl_arith!($bound, $fn, $fn, &$tt, &$tt);
+		impl_arith!($bound, $fn, $fn, $tt, &$tt);
+		impl_arith!($bound, $fn, $fn, &$tt, $tt);
 	};
-	($bound:ident,$fn:ident,$fn2:ident,$tt:ty,$p:ident,$rm:ident) => {
-		impl_arith!($bound, $fn, $fn2, $tt, $p, $rm);
-		impl_arith!($bound, $fn, $fn2, &$tt, $p, $rm);
-		impl_arith!($bound, $fn, $fn2, $tt, &$tt, $p, $rm);
-		impl_arith!($bound, $fn, $fn2, &$tt, $tt, $p, $rm);
+	($bound:ident,$fn:ident,$tt:ty,$p:ident,$rm:ident) => {
+		impl_arith!($bound, $fn, $fn, $tt, $tt, $p, $rm);
+		impl_arith!($bound, $fn, $fn, &$tt, &$tt, $p, $rm);
+		impl_arith!($bound, $fn, $fn, $tt, &$tt, $p, $rm);
+		impl_arith!($bound, $fn, $fn, &$tt, $tt, $p, $rm);
 	};
 }
 
 // ADD
 //
-impl_arith_4!(Add, add, add_full_prec, EasyBigFloat);
+impl_arith_4!(Add, add, EasyBigFloat, P, RM);
 
 // ADD ASSIGN
 //
@@ -177,7 +171,7 @@ impl_display!(Display);
 
 // DIV
 //
-impl_arith_4!(Div, div, div, EasyBigFloat, P, RM);
+impl_arith_4!(Div, div, EasyBigFloat, P, RM);
 
 // DIV ASSIGN
 //
@@ -202,7 +196,7 @@ impl_arith_assign!(
 
 // MUL
 //
-impl_arith_4!(Mul, mul, mul_full_prec, EasyBigFloat);
+impl_arith_4!(Mul, mul, EasyBigFloat, P, RM);
 
 // MUL ASSIGN
 //
@@ -263,7 +257,7 @@ impl PartialOrd for EasyBigFloat {
 
 // REM
 //
-impl_arith_4!(Rem, rem, rem, EasyBigFloat);
+impl_arith_4!(Rem, rem, EasyBigFloat);
 
 // REM ASSIGN
 //
@@ -272,7 +266,7 @@ impl_arith_assign!(RemAssign, rem_assign, rem, EasyBigFloat, &EasyBigFloat);
 
 // SUB
 //
-impl_arith_4!(Sub, sub, sub_full_prec, EasyBigFloat);
+impl_arith_4!(Sub, sub, EasyBigFloat, P, RM);
 
 // SUB ASSIGN
 //
@@ -294,7 +288,7 @@ impl_arith_assign!(
 impl Zero for EasyBigFloat {
 	fn zero() -> Self {
 		Self {
-			val: BigFloat::from_i8(0, P),
+			val: BigFloat::from_f64(0.0, P),
 		}
 	}
 
@@ -306,7 +300,7 @@ impl Zero for EasyBigFloat {
 impl One for EasyBigFloat {
 	fn one() -> Self {
 		Self {
-			val: BigFloat::from_i8(1, P),
+			val: BigFloat::from_f64(1.0, P),
 		}
 	}
 }
@@ -485,7 +479,34 @@ mod tests {
 		let b = EasyBigFloat::from_f64(1.0);
 		let c = EasyBigFloat::from_f64(11.0);
 
-		assert_eq!(c, a + b);
+		assert_eq!(c, &a + &b);
+		assert_eq!(a, &c - &b);
+
+		let one = EasyBigFloat::one();
+		let zero = EasyBigFloat::zero();
+		println!("{}", &one);
+		dbg!(&one);
+		println!("{}", &zero);
+		dbg!(&zero);
+
+		let one_zero = &one - &zero;
+		println!("{}", &one_zero);
+		dbg!(&one_zero);
+
+		assert_eq!(one, one_zero);
+
+		let one = BigFloat::from_f64(1.0, 1024);
+		let zero = BigFloat::from_f64(0.0, 1024);
+		println!("{}", &one);
+		dbg!(&one);
+		println!("{}", &zero);
+		dbg!(&zero);
+
+		let one_zero = one.sub(&zero, 1024, RoundingMode::None);
+		println!("{}", &one_zero);
+		dbg!(&one_zero);
+
+		assert_eq!(one, one_zero);
 	}
 
 	#[test]
