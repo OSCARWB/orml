@@ -39,10 +39,10 @@ pub trait Hypot {
 }
 
 pub trait Signed {
-	fn is_sign_positive(self) -> bool;
-	fn is_sign_negative(self) -> bool;
-	fn signum(self) -> Self;
-	fn copysign(self, sign: Self) -> Self;
+	fn is_sign_positive(&self) -> bool;
+	fn is_sign_negative(&self) -> bool;
+	fn signum(&self) -> Self;
+	fn copysign(&self, sign: &Self) -> Self;
 }
 
 pub trait Max {

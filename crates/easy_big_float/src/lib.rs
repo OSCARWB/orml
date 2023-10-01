@@ -463,14 +463,6 @@ impl Num for EasyBigFloat {
 	}
 }
 
-impl SquareRoot for EasyBigFloat {
-	fn sqrt(&self) -> Self {
-		Self {
-			val: BigFloat::sqrt(&self.val, P, RM),
-		}
-	}
-}
-
 use orml_traits::fns::trig::*;
 
 macro_rules! CC {
@@ -482,6 +474,7 @@ macro_rules! CC {
 macro_rules! impl_trig {
 	($bound:ident,$fn:ident) => {
 		impl $bound for EasyBigFloat {
+			#[inline]
 			fn $fn(&self) -> Self {
 				Self {
 					val: BigFloat::$fn(&self.val, P, RM, &mut CC!()),
@@ -521,23 +514,57 @@ fn atan2(y: &EasyBigFloat, x: &EasyBigFloat) -> EasyBigFloat {
 	}
 }
 
-impl Atan2 for EasyBigFloat {
+impl EasyBigFloat {
+	#[inline]
 	fn atan2(&self, other: &Self) -> Self {
 		atan2(other, self)
 	}
-}
 
-impl Pow for EasyBigFloat {
+	#[inline]
 	fn pow(self, n: &Self) -> Self {
 		Self {
 			val: BigFloat::pow(&self.val, &n.val, P, RM, &mut CC!()),
 		}
 	}
 
+	#[inline]
 	fn powi(self, n: usize) -> Self {
 		Self {
 			val: BigFloat::powi(&self.val, n, P, RM),
 		}
+	}
+
+	#[inline]
+	fn sqrt(&self) -> Self {
+		Self {
+			val: BigFloat::sqrt(&self.val, P, RM),
+		}
+	}
+}
+
+impl Atan2 for EasyBigFloat {
+	#[inline]
+	fn atan2(&self, other: &Self) -> Self {
+		EasyBigFloat::atan2(other, self)
+	}
+}
+
+impl Pow for EasyBigFloat {
+	#[inline]
+	fn pow(self, n: &Self) -> Self {
+		EasyBigFloat::pow(self, n)
+	}
+
+	#[inline]
+	fn powi(self, n: usize) -> Self {
+		EasyBigFloat::powi(self, n)
+	}
+}
+
+impl SquareRoot for EasyBigFloat {
+	#[inline]
+	fn sqrt(&self) -> Self {
+		EasyBigFloat::sqrt(self)
 	}
 }
 
