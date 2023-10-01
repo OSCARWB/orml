@@ -35,13 +35,13 @@ where
 	type Output = Vector<T, 3>;
 
 	fn mul(self, rhs: Vector<T, 3>) -> Self::Output {
-		let w = self.w;
+		let w = &self.w;
 		let b = Vector::from_array([self.x, self.y, self.z]);
 		let b2 = b.length_squared();
 		let rb = rhs.dot(&b);
 		let two = T::one() + T::one();
 		let br = b.cross(&rhs);
-		rhs * (&w * &w - b2) + (b * (rb * two)) + (br * (&w + &w))
+		rhs * (w * w - b2) + (b * (rb * two)) + (br * (w + w))
 	}
 }
 

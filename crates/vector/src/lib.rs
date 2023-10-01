@@ -6,7 +6,7 @@
 //! This module contains a generic Vector (Vector<T, const DIMS: usize>) that can be any type or size
 //! and type defs of commonly used vector i.e Vec3f64
 
-use std::fmt::Debug;
+use std::fmt::{Debug, Display};
 
 pub mod arithmetic;
 pub mod index;
@@ -120,6 +120,19 @@ where
 }
 
 impl<T, const DIMS: usize> Copy for Vector<T, DIMS> where T: Copy {}
+
+impl<T, const DIMS: usize> Display for Vector<T, DIMS>
+where
+	T: Display,
+{
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		write!(f, "[")?;
+		for e in &self.vals {
+			write!(f, " {},", e)?;
+		}
+		write!(f, " ]")
+	}
+}
 
 #[cfg(test)]
 mod tests {

@@ -465,6 +465,14 @@ impl SquareRoot for EasyBigFloat {
 	}
 }
 
+impl From<f64> for EasyBigFloat {
+	fn from(value: f64) -> Self {
+		Self {
+			val: BigFloat::from(value),
+		}
+	}
+}
+
 #[cfg(test)]
 mod tests {
 	use orml_vector::Vector;
