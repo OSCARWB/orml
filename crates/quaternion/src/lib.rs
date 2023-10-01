@@ -10,7 +10,6 @@ use std::ops::{Add, Mul};
 
 use num_traits::One;
 use orml_traits::fns::trig::{Cos, Sin};
-use orml_vector::Vector;
 
 pub mod arithmetic;
 //#[cfg(feature = "vector")]
@@ -117,19 +116,19 @@ impl<T> Copy for Quaternion<T> where T: Copy {}
 
 impl<T> Quaternion<T>
 where
-	T: Sin + Cos + One + Add<Output = T> + Default + Clone,
-	for<'a> &'a T: Mul<Output = T>,
+	T: Sin + Cos + One + Add<Output = T> + Mul<Output = T> + Clone,
+	//for<'a> &'a T: Mul<&'a T, Output = T>,
 {
+	/// uh
 	#[inline]
-	pub fn from_axis_angle(axis: Vector<T, 3>, angle: T) -> Self {
+	pub fn from_axis_angle(axis: [T; 3], angle: T) -> Self {
 		let a5 = angle * (T::one() + T::one());
 		let s = a5.sin();
 		let c = a5.cos();
-		let v = axis * s;
 		Self {
-			x: v[0].clone(),
-			y: v[1].clone(),
-			z: v[2].clone(),
+			x: axis[0].clone() * s.clone(),
+			y: axis[1].clone() * s.clone(),
+			z: axis[2].clone() * s.clone(),
 			w: c,
 		}
 	}

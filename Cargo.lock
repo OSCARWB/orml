@@ -122,6 +122,7 @@ dependencies = [
  "astro-float",
  "lazy_static",
  "num-traits",
+ "orml_quaternion",
  "orml_traits",
  "orml_vector",
 ]
