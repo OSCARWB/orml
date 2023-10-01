@@ -17,7 +17,7 @@ pub use orml_traits::{
 	impl_all_trig,
 };
 
-const P: usize = 1024;
+//const P: usize = 1024;
 const RM: RoundingMode = RoundingMode::None;
 
 lazy_static! {
@@ -25,11 +25,11 @@ lazy_static! {
 }
 
 #[derive(Debug)]
-pub struct EasyBigFloat {
+pub struct EasyBigFloat<const P: usize> {
 	val: BigFloat,
 }
 
-impl EasyBigFloat {
+impl<const P: usize> EasyBigFloat<P> {
 	pub fn new() -> Self {
 		Self {
 			val: BigFloat::new(P),
@@ -43,7 +43,7 @@ impl EasyBigFloat {
 	}
 }
 
-impl Default for EasyBigFloat {
+impl<const P: usize> Default for EasyBigFloat<P> {
 	fn default() -> Self {
 		Self::new()
 	}
@@ -67,8 +67,8 @@ impl Default for EasyBigFloat {
 
 macro_rules! impl_arith {
 	($bound:ident,$fn:ident,$fn2:ident,$lhs:ty,$rhs:ty) => {
-		impl $bound<$rhs> for $lhs {
-			type Output = EasyBigFloat;
+		impl<const P: usize> $bound<$rhs> for $lhs {
+			type Output = EasyBigFloat<P>;
 
 			fn $fn(self, rhs: $rhs) -> Self::Output {
 				Self::Output {
@@ -77,13 +77,13 @@ macro_rules! impl_arith {
 			}
 		}
 	};
-	($bound:ident,$fn:ident,$fn2:ident,$lhs:ty,$rhs:ty,$p:ident,$rm:ident) => {
-		impl $bound<$rhs> for $lhs {
-			type Output = EasyBigFloat;
+	($bound:ident,$fn:ident,$fn2:ident,$lhs:ty,$rhs:ty,$rm:ident) => {
+		impl<const P: usize> $bound<$rhs> for $lhs {
+			type Output = EasyBigFloat<P>;
 
 			fn $fn(self, rhs: $rhs) -> Self::Output {
 				Self::Output {
-					val: self.val.$fn2(&rhs.val, $p, $rm),
+					val: self.val.$fn2(&rhs.val, P, $rm),
 				}
 			}
 		}
@@ -92,14 +92,14 @@ macro_rules! impl_arith {
 
 macro_rules! impl_arith_assign {
 	($bound:ident,$fn:ident,$fn2:ident,$lhs:ty,$rhs:ty) => {
-		impl $bound<$rhs> for $lhs {
+		impl<const P: usize> $bound<$rhs> for $lhs {
 			fn $fn(&mut self, rhs: $rhs) {
 				self.val = self.val.$fn2(&rhs.val);
 			}
 		}
 	};
 	($bound:ident,$fn:ident,$fn2:ident,$lhs:ty,$rhs:ty,$p:ident,$rm:ident) => {
-		impl $bound<$rhs> for $lhs {
+		impl<const P: usize> $bound<$rhs> for $lhs {
 			fn $fn(&mut self, rhs: $rhs) {
 				self.val = self.val.$fn2(&rhs.val, $p, $rm);
 			}
@@ -114,17 +114,17 @@ macro_rules! impl_arith_4 {
 		impl_arith!($bound, $fn, $fn, $tt, &$tt);
 		impl_arith!($bound, $fn, $fn, &$tt, $tt);
 	};
-	($bound:ident,$fn:ident,$tt:ty,$p:ident,$rm:ident) => {
-		impl_arith!($bound, $fn, $fn, $tt, $tt, $p, $rm);
-		impl_arith!($bound, $fn, $fn, &$tt, &$tt, $p, $rm);
-		impl_arith!($bound, $fn, $fn, $tt, &$tt, $p, $rm);
-		impl_arith!($bound, $fn, $fn, &$tt, $tt, $p, $rm);
+	($bound:ident,$fn:ident,$tt:ty,$rm:ident) => {
+		impl_arith!($bound, $fn, $fn, $tt, $tt, $rm);
+		impl_arith!($bound, $fn, $fn, &$tt, &$tt, $rm);
+		impl_arith!($bound, $fn, $fn, $tt, &$tt, $rm);
+		impl_arith!($bound, $fn, $fn, &$tt, $tt, $rm);
 	};
 }
 
 // ADD
 //
-impl_arith_4!(Add, add, EasyBigFloat, P, RM);
+impl_arith_4!(Add, add, EasyBigFloat<P>, RM);
 
 // ADD ASSIGN
 //
@@ -132,20 +132,20 @@ impl_arith_assign!(
 	AddAssign,
 	add_assign,
 	add_full_prec,
-	EasyBigFloat,
-	EasyBigFloat
+	EasyBigFloat<P>,
+	EasyBigFloat<P>
 );
 impl_arith_assign!(
 	AddAssign,
 	add_assign,
 	add_full_prec,
-	EasyBigFloat,
-	&EasyBigFloat
+	EasyBigFloat<P>,
+	&EasyBigFloat<P>
 );
 
 // CLONE
 //
-impl Clone for EasyBigFloat {
+impl<const P: usize> Clone for EasyBigFloat<P> {
 	fn clone(&self) -> Self {
 		Self {
 			val: self.val.clone(),
@@ -156,7 +156,7 @@ impl Clone for EasyBigFloat {
 // DISPLAY
 macro_rules! impl_display {
 	($bound:ident) => {
-		impl $bound for EasyBigFloat {
+		impl<const P: usize> $bound for EasyBigFloat<P> {
 			fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 				$bound::fmt(&self.val, f)
 			}
@@ -171,7 +171,7 @@ impl_display!(Display);
 
 // DIV
 //
-impl_arith_4!(Div, div, EasyBigFloat, P, RM);
+impl_arith_4!(Div, div, EasyBigFloat<P>, RM);
 
 // DIV ASSIGN
 //
@@ -179,8 +179,8 @@ impl_arith_assign!(
 	DivAssign,
 	div_assign,
 	div,
-	EasyBigFloat,
-	EasyBigFloat,
+	EasyBigFloat<P>,
+	EasyBigFloat<P>,
 	P,
 	RM
 );
@@ -188,15 +188,15 @@ impl_arith_assign!(
 	DivAssign,
 	div_assign,
 	div,
-	EasyBigFloat,
-	&EasyBigFloat,
+	EasyBigFloat<P>,
+	&EasyBigFloat<P>,
 	P,
 	RM
 );
 
 // MUL
 //
-impl_arith_4!(Mul, mul, EasyBigFloat, P, RM);
+impl_arith_4!(Mul, mul, EasyBigFloat<P>, RM);
 
 // MUL ASSIGN
 //
@@ -204,21 +204,21 @@ impl_arith_assign!(
 	MulAssign,
 	mul_assign,
 	mul_full_prec,
-	EasyBigFloat,
-	EasyBigFloat
+	EasyBigFloat<P>,
+	EasyBigFloat<P>
 );
 impl_arith_assign!(
 	MulAssign,
 	mul_assign,
 	mul_full_prec,
-	EasyBigFloat,
-	&EasyBigFloat
+	EasyBigFloat<P>,
+	&EasyBigFloat<P>
 );
 
 // NEG
 //
-impl Neg for &EasyBigFloat {
-	type Output = EasyBigFloat;
+impl<const P: usize> Neg for &EasyBigFloat<P> {
+	type Output = EasyBigFloat<P>;
 
 	fn neg(self) -> Self::Output {
 		Self::Output {
@@ -227,8 +227,8 @@ impl Neg for &EasyBigFloat {
 	}
 }
 
-impl Neg for EasyBigFloat {
-	type Output = EasyBigFloat;
+impl<const P: usize> Neg for EasyBigFloat<P> {
+	type Output = EasyBigFloat<P>;
 
 	fn neg(self) -> Self::Output {
 		Self::Output {
@@ -239,17 +239,17 @@ impl Neg for EasyBigFloat {
 
 // PARTIAL_EQ
 //
-impl PartialEq for EasyBigFloat {
+impl<const P: usize> PartialEq for EasyBigFloat<P> {
 	fn eq(&self, other: &Self) -> bool {
 		self.val == other.val
 	}
 }
 
-impl Eq for EasyBigFloat {}
+impl<const P: usize> Eq for EasyBigFloat<P> {}
 
 // PARTIAL_ORD
 //
-impl PartialOrd for EasyBigFloat {
+impl<const P: usize> PartialOrd for EasyBigFloat<P> {
 	fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
 		self.val.partial_cmp(&other.val)
 	}
@@ -257,16 +257,22 @@ impl PartialOrd for EasyBigFloat {
 
 // REM
 //
-impl_arith_4!(Rem, rem, EasyBigFloat);
+impl_arith_4!(Rem, rem, EasyBigFloat<P>);
 
 // REM ASSIGN
 //
-impl_arith_assign!(RemAssign, rem_assign, rem, EasyBigFloat, EasyBigFloat);
-impl_arith_assign!(RemAssign, rem_assign, rem, EasyBigFloat, &EasyBigFloat);
+impl_arith_assign!(RemAssign, rem_assign, rem, EasyBigFloat<P>, EasyBigFloat<P>);
+impl_arith_assign!(
+	RemAssign,
+	rem_assign,
+	rem,
+	EasyBigFloat<P>,
+	&EasyBigFloat<P>
+);
 
 // SUB
 //
-impl_arith_4!(Sub, sub, EasyBigFloat, P, RM);
+impl_arith_4!(Sub, sub, EasyBigFloat<P>, RM);
 
 // SUB ASSIGN
 //
@@ -274,18 +280,18 @@ impl_arith_assign!(
 	SubAssign,
 	sub_assign,
 	sub_full_prec,
-	EasyBigFloat,
-	EasyBigFloat
+	EasyBigFloat<P>,
+	EasyBigFloat<P>
 );
 impl_arith_assign!(
 	SubAssign,
 	sub_assign,
 	sub_full_prec,
-	EasyBigFloat,
-	&EasyBigFloat
+	EasyBigFloat<P>,
+	&EasyBigFloat<P>
 );
 
-impl Zero for EasyBigFloat {
+impl<const P: usize> Zero for EasyBigFloat<P> {
 	fn zero() -> Self {
 		Self {
 			val: BigFloat::from_f64(0.0, P),
@@ -297,7 +303,7 @@ impl Zero for EasyBigFloat {
 	}
 }
 
-impl One for EasyBigFloat {
+impl<const P: usize> One for EasyBigFloat<P> {
 	fn one() -> Self {
 		Self {
 			val: BigFloat::from_f64(1.0, P),
@@ -305,7 +311,7 @@ impl One for EasyBigFloat {
 	}
 }
 
-impl Num for EasyBigFloat {
+impl<const P: usize> Num for EasyBigFloat<P> {
 	type FromStrRadixErr = ();
 
 	fn from_str_radix(str: &str, radix: u32) -> Result<Self, Self::FromStrRadixErr> {
@@ -327,7 +333,7 @@ macro_rules! CC {
 	};
 }
 
-fn atan2(y: &EasyBigFloat, x: &EasyBigFloat) -> EasyBigFloat {
+fn atan2<const P: usize>(y: &EasyBigFloat<P>, x: &EasyBigFloat<P>) -> EasyBigFloat<P> {
 	let zero = EasyBigFloat::zero();
 	let pi = EasyBigFloat {
 		val: CC!().pi(P, RM),
@@ -393,7 +399,7 @@ macro_rules! impl_cc_fn {
 	};
 }
 
-impl EasyBigFloat {
+impl<const P: usize> EasyBigFloat<P> {
 	impl_cc_fn!(pow, &Self);
 
 	// Trig
@@ -420,7 +426,7 @@ impl EasyBigFloat {
 
 macro_rules! impl_trig {
 	($bound:ident,$fn:ident) => {
-		impl $bound for EasyBigFloat {
+		impl<const P: usize> $bound for EasyBigFloat<P> {
 			#[inline]
 			fn $fn(&self) -> Self {
 				Self {
@@ -433,14 +439,14 @@ macro_rules! impl_trig {
 
 impl_all_trig!(impl_trig);
 
-impl Atan2 for EasyBigFloat {
+impl<const P: usize> Atan2 for EasyBigFloat<P> {
 	#[inline]
 	fn atan2(&self, other: &Self) -> Self {
 		EasyBigFloat::atan2(other, self)
 	}
 }
 
-impl Pow for EasyBigFloat {
+impl<const P: usize> Pow for EasyBigFloat<P> {
 	#[inline]
 	fn pow(&self, n: &Self) -> Self {
 		EasyBigFloat::pow(self, n)
@@ -452,14 +458,14 @@ impl Pow for EasyBigFloat {
 	}
 }
 
-impl SquareRoot for EasyBigFloat {
+impl<const P: usize> SquareRoot for EasyBigFloat<P> {
 	#[inline]
 	fn sqrt(&self) -> Self {
 		EasyBigFloat::sqrt(self)
 	}
 }
 
-impl From<f64> for EasyBigFloat {
+impl<const P: usize> From<f64> for EasyBigFloat<P> {
 	fn from(value: f64) -> Self {
 		Self {
 			val: BigFloat::from(value),
@@ -475,15 +481,15 @@ mod tests {
 
 	#[test]
 	fn test() {
-		let a = EasyBigFloat::from_f64(10.0);
-		let b = EasyBigFloat::from_f64(1.0);
-		let c = EasyBigFloat::from_f64(11.0);
+		let a = EasyBigFloat::<1024>::from_f64(10.0);
+		let b = EasyBigFloat::<1024>::from_f64(1.0);
+		let c = EasyBigFloat::<1024>::from_f64(11.0);
 
 		assert_eq!(c, &a + &b);
 		assert_eq!(a, &c - &b);
 
-		let one = EasyBigFloat::one();
-		let zero = EasyBigFloat::zero();
+		let one = EasyBigFloat::<1024>::one();
+		let zero = EasyBigFloat::<1024>::zero();
 		println!("{}", &one);
 		dbg!(&one);
 		println!("{}", &zero);
@@ -512,20 +518,20 @@ mod tests {
 	#[test]
 	fn test_vec() {
 		let a = Vector::from_array([
-			EasyBigFloat::from_f64(10.0),
-			EasyBigFloat::from_f64(10.0),
-			EasyBigFloat::from_f64(10.0),
+			EasyBigFloat::<1024>::from_f64(10.0),
+			EasyBigFloat::<1024>::from_f64(10.0),
+			EasyBigFloat::<1024>::from_f64(10.0),
 		]);
 		let b = Vector::from_array([
-			EasyBigFloat::from_f64(20.0),
-			EasyBigFloat::from_f64(20.0),
-			EasyBigFloat::from_f64(20.0),
+			EasyBigFloat::<1024>::from_f64(20.0),
+			EasyBigFloat::<1024>::from_f64(20.0),
+			EasyBigFloat::<1024>::from_f64(20.0),
 		]);
 
 		let c = Vector::from_array([
-			EasyBigFloat::from_f64(30.0),
-			EasyBigFloat::from_f64(30.0),
-			EasyBigFloat::from_f64(30.0),
+			EasyBigFloat::<1024>::from_f64(30.0),
+			EasyBigFloat::<1024>::from_f64(30.0),
+			EasyBigFloat::<1024>::from_f64(30.0),
 		]);
 
 		assert_eq!(a, a);
