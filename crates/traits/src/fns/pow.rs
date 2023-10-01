@@ -1,6 +1,6 @@
 pub trait Pow {
-	fn pow(self, n: &Self) -> Self;
-	fn powi(self, n: usize) -> Self;
+	fn pow(&self, n: &Self) -> Self;
+	fn powi(&self, n: usize) -> Self;
 }
 
 pub trait Powi {

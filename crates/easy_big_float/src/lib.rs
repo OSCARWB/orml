@@ -65,61 +65,89 @@ impl Default for EasyBigFloat {
 // 	}
 // }
 
+macro_rules! impl_arith {
+	($bound:ident,$fn:ident,$fn2:ident,$lhs:ty,$p:ident,$rm:ident) => {
+		impl_arith!($bound, $fn, $fn2, $lhs, $lhs, $p, $rm);
+	};
+	($bound:ident,$fn:ident,$fn2:ident,$lhs:ty,$rhs:ty) => {
+		impl $bound<$rhs> for $lhs {
+			type Output = EasyBigFloat;
+
+			fn $fn(self, rhs: $rhs) -> Self::Output {
+				Self::Output {
+					val: self.val.$fn2(&rhs.val),
+				}
+			}
+		}
+	};
+	($bound:ident,$fn:ident,$fn2:ident,$lhs:ty) => {
+		impl_arith!($bound, $fn, $fn2, $lhs, $lhs);
+	};
+	($bound:ident,$fn:ident,$fn2:ident,$lhs:ty,$rhs:ty,$p:ident,$rm:ident) => {
+		impl $bound<$rhs> for $lhs {
+			type Output = EasyBigFloat;
+
+			fn $fn(self, rhs: $rhs) -> Self::Output {
+				Self::Output {
+					val: self.val.$fn2(&rhs.val, $p, $rm),
+				}
+			}
+		}
+	};
+}
+
+macro_rules! impl_arith_assign {
+	($bound:ident,$fn:ident,$fn2:ident,$lhs:ty,$rhs:ty) => {
+		impl $bound<$rhs> for $lhs {
+			fn $fn(&mut self, rhs: $rhs) {
+				self.val = self.val.$fn2(&rhs.val);
+			}
+		}
+	};
+	($bound:ident,$fn:ident,$fn2:ident,$lhs:ty,$rhs:ty,$p:ident,$rm:ident) => {
+		impl $bound<$rhs> for $lhs {
+			fn $fn(&mut self, rhs: $rhs) {
+				self.val = self.val.$fn2(&rhs.val, $p, $rm);
+			}
+		}
+	};
+}
+
+macro_rules! impl_arith_4 {
+	($bound:ident,$fn:ident,$fn2:ident,$tt:ty) => {
+		impl_arith!($bound, $fn, $fn2, $tt);
+		impl_arith!($bound, $fn, $fn2, &$tt);
+		impl_arith!($bound, $fn, $fn2, $tt, &$tt);
+		impl_arith!($bound, $fn, $fn2, &$tt, $tt);
+	};
+	($bound:ident,$fn:ident,$fn2:ident,$tt:ty,$p:ident,$rm:ident) => {
+		impl_arith!($bound, $fn, $fn2, $tt, $p, $rm);
+		impl_arith!($bound, $fn, $fn2, &$tt, $p, $rm);
+		impl_arith!($bound, $fn, $fn2, $tt, &$tt, $p, $rm);
+		impl_arith!($bound, $fn, $fn2, &$tt, $tt, $p, $rm);
+	};
+}
+
 // ADD
 //
-impl Add<&EasyBigFloat> for &EasyBigFloat {
-	type Output = EasyBigFloat;
-
-	fn add(self, rhs: &EasyBigFloat) -> Self::Output {
-		Self::Output {
-			val: self.val.add_full_prec(&rhs.val),
-		}
-	}
-}
-
-impl Add<&EasyBigFloat> for EasyBigFloat {
-	type Output = EasyBigFloat;
-
-	fn add(self, rhs: &EasyBigFloat) -> Self::Output {
-		Self::Output {
-			val: self.val.add_full_prec(&rhs.val),
-		}
-	}
-}
-
-impl<'a> Add<EasyBigFloat> for &'a EasyBigFloat {
-	type Output = EasyBigFloat;
-
-	fn add(self, rhs: EasyBigFloat) -> Self::Output {
-		Self::Output {
-			val: self.val.add_full_prec(&rhs.val),
-		}
-	}
-}
-
-impl Add<EasyBigFloat> for EasyBigFloat {
-	type Output = EasyBigFloat;
-
-	fn add(self, rhs: EasyBigFloat) -> Self::Output {
-		Self::Output {
-			val: self.val.add_full_prec(&rhs.val),
-		}
-	}
-}
+impl_arith_4!(Add, add, add_full_prec, EasyBigFloat);
 
 // ADD ASSIGN
 //
-impl AddAssign<&EasyBigFloat> for EasyBigFloat {
-	fn add_assign(&mut self, rhs: &EasyBigFloat) {
-		self.val = self.val.add_full_prec(&rhs.val);
-	}
-}
-
-impl AddAssign<EasyBigFloat> for EasyBigFloat {
-	fn add_assign(&mut self, rhs: EasyBigFloat) {
-		self.val = self.val.add_full_prec(&rhs.val);
-	}
-}
+impl_arith_assign!(
+	AddAssign,
+	add_assign,
+	add_full_prec,
+	EasyBigFloat,
+	EasyBigFloat
+);
+impl_arith_assign!(
+	AddAssign,
+	add_assign,
+	add_full_prec,
+	EasyBigFloat,
+	&EasyBigFloat
+);
 
 // CLONE
 //
@@ -141,141 +169,57 @@ macro_rules! impl_display {
 		}
 	};
 }
+
 impl_display!(Binary);
 impl_display!(Octal);
 impl_display!(UpperHex);
 impl_display!(Display);
-// impl Display for EasyBigFloat {
-// 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-// 		Display::fmt(&self.val, f)
-// 	}
-// }
-// impl Binary for EasyBigFloat {
-// 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-// 		Binary::fmt(&self.val, f)
-// 	}
-// }
-// impl Octal for EasyBigFloat {
-// 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-// 		Octal::fmt(&self.val, f)
-// 	}
-// }
-// impl UpperHex for EasyBigFloat {
-// 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-// 		UpperHex::fmt(&self.val, f)
-// 	}
-// }
 
 // DIV
 //
-impl Div<&EasyBigFloat> for &EasyBigFloat {
-	type Output = EasyBigFloat;
-
-	fn div(self, rhs: &EasyBigFloat) -> Self::Output {
-		Self::Output {
-			val: self.val.div(&rhs.val, P, RM),
-		}
-	}
-}
-
-impl Div<&EasyBigFloat> for EasyBigFloat {
-	type Output = EasyBigFloat;
-
-	fn div(self, rhs: &EasyBigFloat) -> Self::Output {
-		Self::Output {
-			val: self.val.div(&rhs.val, P, RM),
-		}
-	}
-}
-
-impl<'a> Div<EasyBigFloat> for &'a EasyBigFloat {
-	type Output = EasyBigFloat;
-
-	fn div(self, rhs: EasyBigFloat) -> Self::Output {
-		Self::Output {
-			val: self.val.div(&rhs.val, P, RM),
-		}
-	}
-}
-
-impl Div<EasyBigFloat> for EasyBigFloat {
-	type Output = EasyBigFloat;
-
-	fn div(self, rhs: EasyBigFloat) -> Self::Output {
-		Self::Output {
-			val: self.val.div(&rhs.val, P, RM),
-		}
-	}
-}
+impl_arith_4!(Div, div, div, EasyBigFloat, P, RM);
 
 // DIV ASSIGN
-impl DivAssign<&EasyBigFloat> for EasyBigFloat {
-	fn div_assign(&mut self, rhs: &EasyBigFloat) {
-		self.val = self.val.div(&rhs.val, P, RM);
-	}
-}
-
-impl DivAssign<EasyBigFloat> for EasyBigFloat {
-	fn div_assign(&mut self, rhs: EasyBigFloat) {
-		self.val = self.val.div(&rhs.val, P, RM);
-	}
-}
+//
+impl_arith_assign!(
+	DivAssign,
+	div_assign,
+	div,
+	EasyBigFloat,
+	EasyBigFloat,
+	P,
+	RM
+);
+impl_arith_assign!(
+	DivAssign,
+	div_assign,
+	div,
+	EasyBigFloat,
+	&EasyBigFloat,
+	P,
+	RM
+);
 
 // MUL
 //
-impl Mul<&EasyBigFloat> for &EasyBigFloat {
-	type Output = EasyBigFloat;
-
-	fn mul(self, rhs: &EasyBigFloat) -> Self::Output {
-		Self::Output {
-			val: self.val.mul_full_prec(&rhs.val),
-		}
-	}
-}
-
-impl Mul<&EasyBigFloat> for EasyBigFloat {
-	type Output = EasyBigFloat;
-
-	fn mul(self, rhs: &EasyBigFloat) -> Self::Output {
-		Self::Output {
-			val: self.val.mul_full_prec(&rhs.val),
-		}
-	}
-}
-
-impl<'a> Mul<EasyBigFloat> for &'a EasyBigFloat {
-	type Output = EasyBigFloat;
-
-	fn mul(self, rhs: EasyBigFloat) -> Self::Output {
-		Self::Output {
-			val: self.val.mul_full_prec(&rhs.val),
-		}
-	}
-}
-
-impl Mul<EasyBigFloat> for EasyBigFloat {
-	type Output = EasyBigFloat;
-
-	fn mul(self, rhs: EasyBigFloat) -> Self::Output {
-		Self::Output {
-			val: self.val.mul_full_prec(&rhs.val),
-		}
-	}
-}
+impl_arith_4!(Mul, mul, mul_full_prec, EasyBigFloat);
 
 // MUL ASSIGN
 //
-impl MulAssign<EasyBigFloat> for EasyBigFloat {
-	fn mul_assign(&mut self, rhs: EasyBigFloat) {
-		self.val = self.val.mul_full_prec(&rhs.val);
-	}
-}
-
-impl MulAssign<&EasyBigFloat> for EasyBigFloat {
-	fn mul_assign(&mut self, rhs: &EasyBigFloat) {
-		self.val = self.val.mul_full_prec(&rhs.val);
-	}
-}
+impl_arith_assign!(
+	MulAssign,
+	mul_assign,
+	mul_full_prec,
+	EasyBigFloat,
+	EasyBigFloat
+);
+impl_arith_assign!(
+	MulAssign,
+	mul_assign,
+	mul_full_prec,
+	EasyBigFloat,
+	&EasyBigFloat
+);
 
 // NEG
 //
@@ -319,115 +263,33 @@ impl PartialOrd for EasyBigFloat {
 
 // REM
 //
-impl Rem<&EasyBigFloat> for &EasyBigFloat {
-	type Output = EasyBigFloat;
-
-	fn rem(self, rhs: &EasyBigFloat) -> Self::Output {
-		Self::Output {
-			val: self.val.rem(&rhs.val),
-		}
-	}
-}
-
-impl Rem<&EasyBigFloat> for EasyBigFloat {
-	type Output = EasyBigFloat;
-
-	fn rem(self, rhs: &EasyBigFloat) -> Self::Output {
-		Self::Output {
-			val: self.val.rem(&rhs.val),
-		}
-	}
-}
-
-impl<'a> Rem<EasyBigFloat> for &'a EasyBigFloat {
-	type Output = EasyBigFloat;
-
-	fn rem(self, rhs: EasyBigFloat) -> Self::Output {
-		Self::Output {
-			val: self.val.rem(&rhs.val),
-		}
-	}
-}
-
-impl Rem<EasyBigFloat> for EasyBigFloat {
-	type Output = EasyBigFloat;
-
-	fn rem(self, rhs: EasyBigFloat) -> Self::Output {
-		Self::Output {
-			val: self.val.rem(&rhs.val),
-		}
-	}
-}
+impl_arith_4!(Rem, rem, rem, EasyBigFloat);
 
 // REM ASSIGN
 //
-impl RemAssign<&EasyBigFloat> for EasyBigFloat {
-	fn rem_assign(&mut self, rhs: &EasyBigFloat) {
-		self.val = self.val.rem(&rhs.val);
-	}
-}
-
-impl RemAssign<EasyBigFloat> for EasyBigFloat {
-	fn rem_assign(&mut self, rhs: EasyBigFloat) {
-		self.val = self.val.rem(&rhs.val);
-	}
-}
+impl_arith_assign!(RemAssign, rem_assign, rem, EasyBigFloat, EasyBigFloat);
+impl_arith_assign!(RemAssign, rem_assign, rem, EasyBigFloat, &EasyBigFloat);
 
 // SUB
 //
-impl Sub<&EasyBigFloat> for &EasyBigFloat {
-	type Output = EasyBigFloat;
-
-	fn sub(self, rhs: &EasyBigFloat) -> Self::Output {
-		Self::Output {
-			val: self.val.sub_full_prec(&rhs.val),
-		}
-	}
-}
-
-impl Sub<&EasyBigFloat> for EasyBigFloat {
-	type Output = EasyBigFloat;
-
-	fn sub(self, rhs: &EasyBigFloat) -> Self::Output {
-		Self::Output {
-			val: self.val.sub_full_prec(&rhs.val),
-		}
-	}
-}
-
-impl<'a> Sub<EasyBigFloat> for &'a EasyBigFloat {
-	type Output = EasyBigFloat;
-
-	fn sub(self, rhs: EasyBigFloat) -> Self::Output {
-		Self::Output {
-			val: self.val.sub_full_prec(&rhs.val),
-		}
-	}
-}
-
-impl Sub<EasyBigFloat> for EasyBigFloat {
-	type Output = EasyBigFloat;
-
-	fn sub(self, rhs: EasyBigFloat) -> Self::Output {
-		Self::Output {
-			val: self.val.sub_full_prec(&rhs.val),
-		}
-	}
-}
+impl_arith_4!(Sub, sub, sub_full_prec, EasyBigFloat);
 
 // SUB ASSIGN
 //
-impl SubAssign<EasyBigFloat> for EasyBigFloat {
-	fn sub_assign(&mut self, rhs: EasyBigFloat) {
-		self.val = self.val.sub_full_prec(&rhs.val);
-	}
-}
-
-impl SubAssign<&EasyBigFloat> for EasyBigFloat {
-	fn sub_assign(&mut self, rhs: &EasyBigFloat) {
-		self.val = self.val.sub_full_prec(&rhs.val);
-	}
-}
+impl_arith_assign!(
+	SubAssign,
+	sub_assign,
+	sub_full_prec,
+	EasyBigFloat,
+	EasyBigFloat
+);
+impl_arith_assign!(
+	SubAssign,
+	sub_assign,
+	sub_full_prec,
+	EasyBigFloat,
+	&EasyBigFloat
+);
 
 impl Zero for EasyBigFloat {
 	fn zero() -> Self {
@@ -471,21 +333,6 @@ macro_rules! CC {
 	};
 }
 
-macro_rules! impl_trig {
-	($bound:ident,$fn:ident) => {
-		impl $bound for EasyBigFloat {
-			#[inline]
-			fn $fn(&self) -> Self {
-				Self {
-					val: BigFloat::$fn(&self.val, P, RM, &mut CC!()),
-				}
-			}
-		}
-	};
-}
-
-impl_all_trig!(impl_trig);
-
 fn atan2(y: &EasyBigFloat, x: &EasyBigFloat) -> EasyBigFloat {
 	let zero = EasyBigFloat::zero();
 	let pi = EasyBigFloat {
@@ -514,33 +361,83 @@ fn atan2(y: &EasyBigFloat, x: &EasyBigFloat) -> EasyBigFloat {
 	}
 }
 
+macro_rules! impl_fn {
+	($fn:ident) => {
+		#[inline]
+		pub fn $fn(&self) -> Self {
+			Self {
+				val: BigFloat::$fn(&self.val, P, RM),
+			}
+		}
+	};
+	($fn:ident,$n:ty) => {
+		#[inline]
+		pub fn $fn(&self, n: $n) -> Self {
+			Self {
+				val: BigFloat::$fn(&self.val, n, P, RM),
+			}
+		}
+	};
+}
+
+macro_rules! impl_cc_fn {
+	($fn:ident) => {
+		#[inline]
+		pub fn $fn(&self) -> Self {
+			Self {
+				val: BigFloat::$fn(&self.val, P, RM, &mut CC!()),
+			}
+		}
+	};
+	($fn:ident,$n:ty) => {
+		#[inline]
+		pub fn $fn(&self, n: $n) -> Self {
+			Self {
+				val: BigFloat::$fn(&self.val, &n.val, P, RM, &mut CC!()),
+			}
+		}
+	};
+}
+
 impl EasyBigFloat {
+	impl_cc_fn!(pow, &Self);
+
+	// Trig
+	impl_cc_fn!(acos);
+	impl_cc_fn!(acosh);
+	impl_cc_fn!(asin);
+	impl_cc_fn!(asinh);
+	impl_cc_fn!(atan);
+	impl_cc_fn!(atanh);
+	impl_cc_fn!(cos);
+	impl_cc_fn!(cosh);
+	impl_cc_fn!(sin);
+	impl_cc_fn!(sinh);
+	impl_cc_fn!(tan);
+	impl_cc_fn!(tanh);
 	#[inline]
 	pub fn atan2(&self, other: &Self) -> Self {
 		atan2(other, self)
 	}
 
-	#[inline]
-	pub fn pow(self, n: &Self) -> Self {
-		Self {
-			val: BigFloat::pow(&self.val, &n.val, P, RM, &mut CC!()),
-		}
-	}
-
-	#[inline]
-	pub fn powi(self, n: usize) -> Self {
-		Self {
-			val: BigFloat::powi(&self.val, n, P, RM),
-		}
-	}
-
-	#[inline]
-	pub fn sqrt(&self) -> Self {
-		Self {
-			val: BigFloat::sqrt(&self.val, P, RM),
-		}
-	}
+	impl_fn!(powi, usize);
+	impl_fn!(sqrt);
 }
+
+macro_rules! impl_trig {
+	($bound:ident,$fn:ident) => {
+		impl $bound for EasyBigFloat {
+			#[inline]
+			fn $fn(&self) -> Self {
+				Self {
+					val: BigFloat::$fn(&self.val, P, RM, &mut CC!()),
+				}
+			}
+		}
+	};
+}
+
+impl_all_trig!(impl_trig);
 
 impl Atan2 for EasyBigFloat {
 	#[inline]
@@ -551,12 +448,12 @@ impl Atan2 for EasyBigFloat {
 
 impl Pow for EasyBigFloat {
 	#[inline]
-	fn pow(self, n: &Self) -> Self {
+	fn pow(&self, n: &Self) -> Self {
 		EasyBigFloat::pow(self, n)
 	}
 
 	#[inline]
-	fn powi(self, n: usize) -> Self {
+	fn powi(&self, n: usize) -> Self {
 		EasyBigFloat::powi(self, n)
 	}
 }
