@@ -352,7 +352,7 @@ fn atan2<const P: usize>(y: &EasyBigFloat<P>, x: &EasyBigFloat<P>) -> EasyBigFlo
 	let pi = EasyBigFloat {
 		val: CC!().pi(P, RM),
 	};
-	match (zero.val.cmp(&y.val), zero.val.cmp(&x.val)) {
+	match (y.val.cmp(&zero.val), x.val.cmp(&zero.val)) {
 		(Some(cy), Some(cx)) => {
 			if (cy, cx) == (0, 0) {
 				zero.clone()
